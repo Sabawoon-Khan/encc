@@ -7,6 +7,8 @@ interface TemplateSectionProps {
   title: string;
   children: ReactNode;
   id?: string;
+  /** Right-side actions, e.g. TopicFeedback button */
+  actions?: ReactNode;
 }
 
 /** Shams Hilal Template v2.2 section heading */
@@ -15,12 +17,18 @@ export function TemplateSection({
   title,
   children,
   id,
+  actions,
 }: TemplateSectionProps) {
   return (
-    <section id={id} className="mb-10 scroll-mt-6">
-      <div className="mb-4 flex items-baseline gap-3 border-b border-sky-200 pb-2">
-        <span className="font-mono text-xs font-bold text-sky-600">{number}</span>
-        <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+    <section id={id} className="scroll-mt-20">
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <h2 className="text-base font-semibold text-slate-900">
+          <span className="mr-2 font-mono text-xs font-normal text-slate-400">
+            {number}
+          </span>
+          {title}
+        </h2>
+        {actions && <div className="shrink-0 pt-0.5">{actions}</div>}
       </div>
       {children}
     </section>

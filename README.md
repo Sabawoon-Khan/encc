@@ -1,93 +1,69 @@
 # ENCC ERP Requirements Hub
 
-Living documentation portal for ENCC ERP business requirements — built for analysts, client workshops, and developers.
+Protected documentation portal for ENCC ERP business requirements — built for analysts, client review, and developers.
 
 ## Quick start
 
 ```bash
 cd encc-requirements
 npm install
+cp .env.example .env.local   # set passwords
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) — you will be prompted for a password.
+
+### Default passwords (change in `.env.local`)
+
+| Role | Env variable | Default (dev) |
+|------|----------------|---------------|
+| ENCC client (review, score, approve) | `ENCC_CLIENT_PASSWORD` | `encc-review-2026` |
+| Yaqeen admin (unlock documents) | `ENCC_ADMIN_PASSWORD` | `yaqeen-admin-2026` |
+
+## Contract review workflow
+
+1. **Yaqeen** publishes module documentation (unlocked)
+2. **ENCC client** logs in, reviews content, submits **three scores (0–3)**:
+   - Completeness · Accuracy · Sign-off readiness
+3. **ENCC** adds feedback and either:
+   - **Approve & lock** → document frozen, payment milestone marked released
+   - **Return for revision** → Yaqeen updates and resubmits
+4. **Yaqeen admin** can unlock approved documents for edits if needed
+
+Pages: **Review & Approvals** (`/approvals`) · **§25 on each module page**
 
 ## What this project does
 
-- **Module overview pages** — explain what each department does, executives, and included sections
-- **Section detail pages** — fields, workflows, business rules (Template v2.2 format)
-- **Glossary** — shared terminology across modules
-- **Evidence uploads** — attach form scans, Paper 1.1 samples, screenshots for developers
+- **Password-protected** access for client and admin roles
+- **Module overview** — department structure, general standards, executives
+- **Section pages** — fields, workflows, business rules (Template v2.2)
+- **§25 Review scoring** — three scores 0–3, client approval, document lock
+- **Feedback** — client comments per module/section
+- **Evidence uploads** — form scans (disabled when module locked)
+- **Glossary** — shared terminology
 
 ## Project structure
 
 ```
-src/
-  content/
-    glossary.ts              # Shared terms — edit here
-    modules/
-      index.ts               # Register all modules
-      opr/
-        index.ts             # Operations module metadata
-        archive.ts           # Archive section (fields, workflows, rules)
-  types/requirements.ts      # TypeScript types for all content
-  components/                # UI components
-  app/                       # Next.js pages
-content/
-  evidence-manifest.json     # Upload metadata (auto-updated)
-public/
-  uploads/                   # Uploaded images/PDFs
+src/content/modules/     # Requirement definitions (TypeScript)
+content/reviews.json     # Scores, approvals, locks, feedback (auto-updated)
+content/evidence-manifest.json
+.env.local               # Passwords (never commit)
 ```
 
 ## Adding a new module
 
-1. Create `src/content/modules/{id}/index.ts` with module metadata
-2. Add section files e.g. `src/content/modules/{id}/sales.ts`
-3. Register in `src/content/modules/index.ts`:
-
-```ts
-import { newModule } from "./new-module";
-export const modules = [oprModule, newModule];
-```
-
-## Adding a new section to an existing module
-
-1. Create `src/content/modules/opr/sales.ts` exporting a `SectionDefinition`
-2. Import and add to `sections` array in `src/content/modules/opr/index.ts`
-
-## Content format
-
-Each section follows Shams Hilal Template v2.2:
-
-- Summary bullets
-- Entities with field tables (name, type, required, example, rules)
-- Workflows with steps
-- Business rules (BR-{MODULE}-001)
-- Status: `draft` | `in_review` | `verified` | `pending`
-
-## Evidence uploads
-
-On any documented section page, use **Upload Evidence** to attach:
-
-- Paper form scans (e.g. Archive Paper 1.1)
-- Outgoing letter templates
-- Workshop photos
-
-Files save to `public/uploads/{moduleId}/{sectionId}/` and metadata to `content/evidence-manifest.json`.
-
-## Related files
-
-- HTML export (print/PDF): `../encc/new/encc-module-opr-operations.html`
-- Template reference: `../encc/new/ENCC ERP Requirements Output Template__V2. 2.pdf`
+1. Create `src/content/modules/{id}/index.ts`
+2. Register in `src/content/modules/index.ts`
+3. Client reviews via `/modules/{id}#review-approval`
 
 ## Scripts
 
-| Command       | Description          |
-|---------------|----------------------|
-| `npm run dev` | Development server   |
-| `npm run build` | Production build   |
-| `npm start`   | Run production build |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
 
 ---
 
-Yaqeen Technology · ENCC ERP Requirements Gathering · Template v2.2
+Yaqeen Technology · ENCC ERP · Template v2.2

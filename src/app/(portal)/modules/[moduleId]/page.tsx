@@ -180,7 +180,12 @@ export default async function ModulePage({
                 <p className="mt-1 text-sm text-slate-600">{sec.description}</p>
                 {sec.currentTool && (
                   <p className="mt-2 text-xs text-slate-400">
-                    Current tool: <strong>{sec.currentTool}</strong>
+                    Current tool: {sec.currentTool}
+                  </p>
+                )}
+                {sec.enableReview && (
+                  <p className="mt-1 text-xs text-sky-600">
+                    Review &amp; feedback on section page →
                   </p>
                 )}
               </div>

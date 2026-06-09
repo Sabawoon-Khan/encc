@@ -4,6 +4,7 @@ export const archiveSection: SectionDefinition = {
   id: "archive",
   name: "Archive",
   nameDari: "آرشیف",
+  enableReview: true,
   description:
     "Sub-office of ریایست اجرایه. Registers internal inquiries and external outgoing correspondence. Current process uses Paper 1.1 and a physical book register.",
   status: "draft",
@@ -228,7 +229,14 @@ export const archiveSection: SectionDefinition = {
       endState: "Closed — optionally with result recorded",
       currentTool: "Paper 1.1 / physical book register",
       flowDiagram:
-        "Create record (fields + attachment) → Submit to executive → Executive approve/reject → Send to related department → (Optional) Record result → Close",
+        "Create → Attach → Submit to executive → Approve → Send to department → (Optional) Result → Close",
+      mermaid: `flowchart LR
+  A[Create + Attach] --> B[Submit]
+  B --> C{Executive}
+  C -->|Approve| D[Send to Dept]
+  C -->|Reject| A
+  D --> E[Optional Result]
+  E --> F[Close]`,
       steps: [
         {
           step: 1,
@@ -428,5 +436,131 @@ export const archiveSection: SectionDefinition = {
       override: true,
       approver: "CEO",
     },
+  ],
+  permissionsMatrix: [
+    { action: "View records", archiveClerk: "R", executive: "R", deptStaff: "R", auditor: "R" },
+    { action: "Create internal archive", archiveClerk: "C", executive: "—", deptStaff: "—", auditor: "—" },
+    { action: "Submit for approval", archiveClerk: "C", executive: "—", deptStaff: "—", auditor: "—" },
+    { action: "Approve (routed to self)", archiveClerk: "—", executive: "A", deptStaff: "—", auditor: "—" },
+    { action: "Record result / close", archiveClerk: "U", executive: "—", deptStaff: "—", auditor: "—" },
+    { action: "Create external outgoing", archiveClerk: "C", executive: "—", deptStaff: "—", auditor: "—" },
+    { action: "Export register", archiveClerk: "E", executive: "E", deptStaff: "—", auditor: "R" },
+  ],
+  reports: [
+    {
+      id: "RPT-OPR-001",
+      name: "Internal Archive Register",
+      purpose: "Daily register of all internal inquiries",
+      filters: "Hijri date range, department, executive, status",
+      columns: "inquiry no., ext. doc no., description, dept, approver, result, status",
+      export: "PDF, Excel",
+    },
+    {
+      id: "RPT-OPR-002",
+      name: "External Outgoing Register",
+      purpose: "All outgoing correspondence",
+      filters: "Date range, department, destination",
+      columns: "outgoing no., dept, destination, description, result",
+      export: "PDF, Excel",
+    },
+    {
+      id: "RPT-OPR-003",
+      name: "Pending Executive Approvals",
+      purpose: "Items awaiting executive action",
+      filters: "Executive, age in days",
+      columns: "record no., description, submitted date, assigned executive",
+      export: "PDF",
+    },
+    {
+      id: "RPT-OPR-004",
+      name: "Open Inquiries Dashboard",
+      purpose: "KPI — items without result",
+      filters: "Department, age",
+      columns: "count by dept, avg days open",
+      export: "Dashboard",
+    },
+  ],
+  validationRules: [
+    { field: "external_document_number", rule: "Required, max 50 chars", uiBehavior: "Mandatory on create" },
+    { field: "description", rule: "Required, max 2000 chars", uiBehavior: "Textarea" },
+    { field: "record_date", rule: "Hijri format — see module general standards", uiBehavior: "Date picker (Shamsi)" },
+    { field: "assigned_executive", rule: "Required enum: CEO, Commercial, Operations, Financial", uiBehavior: "Dropdown before submit" },
+    { field: "attachment", rule: "Required on submit; PDF, JPG, PNG; max 10 MB", uiBehavior: "File upload" },
+    { field: "inquiry_result", rule: "Optional; max 2000 chars", uiBehavior: "Shown when closing record" },
+    { field: "approved_by", rule: "Read-only; set by system on approval", uiBehavior: "Read-only after approve" },
+  ],
+  integrations: [
+    {
+      id: "INT-OPR-001",
+      direction: "out",
+      module: "DOC — Document Management",
+      data: "Attachments, retention policy",
+      when: "On file upload",
+      note: "When active",
+    },
+    {
+      id: "INT-OPR-002",
+      direction: "link",
+      module: "FIN — Finance",
+      data: "Items routed to Financial Manager for approval",
+      when: "Executive = Financial",
+      note: "When needed",
+    },
+  ],
+  crossModuleNotes: [
+    "Full cross-module integration map will be documented by Shams Hilal when module connections are confirmed.",
+    "Archive operates largely standalone at HQ; links to other modules are added only where ENCC confirms a business dependency.",
+  ],
+  nfrs: [
+    { area: "Security", requirement: "Role-based access; audit log on all changes; session-protected portal" },
+    { area: "Localization", requirement: "Dari labels on fields; Hijri dates per module general standards" },
+    { area: "Performance", requirement: "Register search under 3 seconds for 10,000 records" },
+    { area: "Retention", requirement: "Archive records retained minimum 10 years" },
+  ],
+  migration: [
+    "Physical Paper 1.1 register and outgoing log to be digitized — volume TBD at workshop.",
+    "Duplicate inquiry numbers must be flagged during import for manual review.",
+  ],
+  edgeCases: [
+    {
+      id: "EC-OPR-001",
+      scenario: "Duplicate external document number from same org.",
+      behavior: "Warn clerk; allow if different inquiry context.",
+      handler: "Archive Clerk",
+    },
+    {
+      id: "EC-OPR-002",
+      scenario: "Lost physical document — no attachment available.",
+      behavior: "Block submit unless admin exception with reason.",
+      handler: "Operations Manager",
+    },
+    {
+      id: "EC-OPR-003",
+      scenario: "Wrong executive selected at creation.",
+      behavior: "Re-route to correct executive with audit trail.",
+      handler: "Archive Clerk",
+    },
+    {
+      id: "EC-OPR-004",
+      scenario: "Executive rejects inquiry.",
+      behavior: "Return to clerk; reason required; can revise and resubmit.",
+      handler: "Assigned executive",
+    },
+    {
+      id: "EC-OPR-005",
+      scenario: "Department never responds — no result.",
+      behavior: "Record can close without result (optional field).",
+      handler: "Archive Clerk",
+    },
+  ],
+  deliverableChecklist: [
+    { item: "Process flows documented", done: true },
+    { item: "Business data dictionary", done: true },
+    { item: "Permissions matrix", done: true },
+    { item: "Reports listed", done: true },
+    { item: "Validation rules", done: true },
+    { item: "Edge cases", done: true },
+    { item: "Evidence samples attached", done: true },
+    { item: "ENCC sign-off", done: false },
   ],
 };

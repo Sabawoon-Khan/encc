@@ -1,0 +1,142 @@
+import { NextResponse } from "next/server";
+import { getSessionRole } from "@/lib/auth";
+import {
+  addFeedback,
+  approveSection,
+  getSectionReview,
+  replyFeedback,
+  returnSection,
+  unlockSection,
+  updateScores,
+  updateTopicScore,
+} from "@/lib/reviews";
+import { getSection } from "@/content/modules";
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ moduleId: string; sectionId: string }> }
+) {
+  const { moduleId, sectionId } = await params;
+  if (!getSection(moduleId, sectionId)) {
+    return NextResponse.json({ error: "Section not found" }, { status: 404 });
+  }
+  const review = await getSectionReview(moduleId, sectionId);
+  const role = await getSessionRole();
+  return NextResponse.json({ review, role });
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ moduleId: string; sectionId: string }> }
+) {
+  const role = await getSessionRole();
+  if (!role) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { moduleId, sectionId } = await params;
+  if (!getSection(moduleId, sectionId)) {
+    return NextResponse.json({ error: "Section not found" }, { status: 404 });
+  }
+
+  const body = (await request.json()) as {
+    action: string;
+    [key: string]: unknown;
+  };
+
+  try {
+    switch (body.action) {
+      case "score": {
+        const review = await updateScores(
+          moduleId,
+          sectionId,
+          {
+            completeness: body.completeness as number,
+            accuracy: body.accuracy as number,
+            signOffReadiness: body.signOffReadiness as number,
+            ratedBy: body.ratedBy as string,
+            notes: body.notes as string | undefined,
+          },
+          (body.ratedBy as string) || "Reviewer",
+          role
+        );
+        return NextResponse.json({ review });
+      }
+      case "topic_score": {
+        const review = await updateTopicScore(
+          moduleId,
+          sectionId,
+          {
+            topicId: body.topicId as string,
+            score: body.score as number,
+            ratedBy: body.ratedBy as string,
+          },
+          role
+        );
+        return NextResponse.json({ review });
+      }
+      case "feedback": {
+        const review = await addFeedback(moduleId, sectionId, {
+          author: (body.author as string) || "ENCC Reviewer",
+          role,
+          message: body.message as string,
+          topicId: body.topicId as string | undefined,
+        });
+        return NextResponse.json({ review });
+      }
+      case "reply": {
+        const review = await replyFeedback(
+          moduleId,
+          sectionId,
+          body.feedbackId as string,
+          body.reply as string,
+          (body.actor as string) || "Yaqeen",
+          role
+        );
+        return NextResponse.json({ review });
+      }
+      case "approve": {
+        const review = await approveSection(
+          moduleId,
+          sectionId,
+          {
+            approvedBy: body.approvedBy as string,
+            approverTitle: body.approverTitle as string | undefined,
+          },
+          role
+        );
+        return NextResponse.json({ review });
+      }
+      case "return": {
+        const review = await returnSection(
+          moduleId,
+          sectionId,
+          {
+            returnedBy: body.returnedBy as string,
+            reason: body.reason as string,
+          },
+          role
+        );
+        return NextResponse.json({ review });
+      }
+      case "unlock": {
+        if (role !== "admin") {
+          return NextResponse.json({ error: "Admin only" }, { status: 403 });
+        }
+        const review = await unlockSection(
+          moduleId,
+          sectionId,
+          (body.actor as string) || "Yaqeen Admin"
+        );
+        return NextResponse.json({ review });
+      }
+      default:
+        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+    }
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Action failed" },
+      { status: 400 }
+    );
+  }
+}

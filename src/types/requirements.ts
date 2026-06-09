@@ -12,7 +12,6 @@ export type FieldType =
   | "boolean"
   | "decimal";
 
-/** Global date format for ENCC — Solar Hijri (Shamsi) */
 export const HIJRI_DATE_FORMAT = "YYYY/MM/DD";
 export const HIJRI_DATE_EXAMPLE = "1405/02/19";
 
@@ -55,6 +54,7 @@ export interface Workflow {
   currentTool?: string;
   steps?: WorkflowStep[];
   flowDiagram?: string;
+  mermaid?: string;
 }
 
 export interface BusinessRule {
@@ -84,6 +84,50 @@ export interface RoleDefinition {
   readOnly: boolean;
 }
 
+export interface PermissionRow {
+  action: string;
+  archiveClerk: string;
+  executive: string;
+  deptStaff: string;
+  auditor: string;
+}
+
+export interface ReportDefinition {
+  id: string;
+  name: string;
+  purpose: string;
+  filters: string;
+  columns: string;
+  export: string;
+}
+
+export interface ValidationRule {
+  field: string;
+  rule: string;
+  uiBehavior?: string;
+}
+
+export interface IntegrationRow {
+  id: string;
+  direction: string;
+  module: string;
+  data: string;
+  when: string;
+  note?: string;
+}
+
+export interface EdgeCase {
+  id: string;
+  scenario: string;
+  behavior: string;
+  handler: string;
+}
+
+export interface DeliverableItem {
+  item: string;
+  done: boolean | "partial";
+}
+
 export interface EntityDefinition {
   id: string;
   name: string;
@@ -104,7 +148,18 @@ export interface SectionDefinition {
   businessRules: BusinessRule[];
   roles?: RoleDefinition[];
   statusLifecycles?: StatusTransition[];
+  permissionsMatrix?: PermissionRow[];
+  reports?: ReportDefinition[];
+  validationRules?: ValidationRule[];
+  integrations?: IntegrationRow[];
+  nfrs?: { area: string; requirement: string }[];
+  migration?: string[];
+  edgeCases?: EdgeCase[];
+  crossModuleNotes?: string[];
+  deliverableChecklist?: DeliverableItem[];
   relatedSections?: string[];
+  /** Show client review & scoring on this section page */
+  enableReview?: boolean;
 }
 
 export interface ExecutiveRole {
@@ -143,18 +198,14 @@ export interface ModuleDefinition {
   purpose: string;
   overview: string;
   purposes: string[];
-  /** Module-wide conventions — applies to all sub-offices (dates, numbering, etc.) */
   generalStandards?: GeneralStandard[];
-  /** Module-wide business rules — not repeated in individual sections */
   globalBusinessRules?: BusinessRule[];
   executives: ExecutiveRole[];
   subOffices: SubOffice[];
   sections: SectionDefinition[];
   relatedModules: { code: string; name: string; relation: string }[];
   openQuestions: { id: string; question: string; owner: string }[];
-  /** Template §6.1 */
   problemStatement?: string;
-  /** Template §6.2 */
   successOutcomes?: { id: string; outcome: string; measure: string; target: string }[];
 }
 

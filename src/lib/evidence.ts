@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir } from "fs/promises";
+import { readFile, writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import type { EvidenceItem, EvidenceManifest } from "@/types/requirements";
 
@@ -59,6 +59,12 @@ export async function deleteEvidence(id: string): Promise<boolean> {
   const manifest = await readManifest();
   const idx = manifest.items.findIndex((i) => i.id === id);
   if (idx === -1) return false;
+  const item = manifest.items[idx];
+  try {
+    await unlink(path.join(UPLOADS_DIR, item.filename));
+  } catch {
+    /* file may already be gone */
+  }
   manifest.items.splice(idx, 1);
   await writeManifest(manifest);
   return true;

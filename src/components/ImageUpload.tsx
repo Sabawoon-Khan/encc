@@ -2,17 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { ImagePlus, Loader2, Upload, X } from "lucide-react";
+import { ImagePlus, Loader2, Lock, Upload, X } from "lucide-react";
 
 interface ImageUploadProps {
   moduleId: string;
   sectionId: string;
+  locked?: boolean;
   onUploaded?: () => void;
 }
 
 export function ImageUpload({
   moduleId,
   sectionId,
+  locked = false,
   onUploaded,
 }: ImageUploadProps) {
   const router = useRouter();
@@ -88,6 +90,13 @@ export function ImageUpload({
         <ImagePlus className="h-4 w-4 text-sky-600" />
         Upload Evidence
       </h3>
+      {locked ? (
+        <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-6 text-sm text-emerald-800">
+          <Lock className="h-5 w-5 shrink-0" />
+          Module approved and locked — uploads disabled
+        </div>
+      ) : (
+        <>
       <p className="mb-4 text-xs text-slate-500">
         Attach form samples, paper scans, or screenshots (Paper 1.1, outgoing
         letters, etc.)
@@ -197,6 +206,8 @@ export function ImageUpload({
           </>
         )}
       </button>
+        </>
+      )}
     </div>
   );
 }

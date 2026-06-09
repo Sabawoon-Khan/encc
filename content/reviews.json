@@ -1,0 +1,54 @@
+{
+  "sections": {
+    "opr/archive": {
+      "moduleId": "opr",
+      "sectionId": "archive",
+      "locked": false,
+      "approvalStatus": "in_review",
+      "paymentMilestone": "pending",
+      "scores": {
+        "completeness": null,
+        "accuracy": null,
+        "signOffReadiness": null
+      },
+      "topicScores": {
+        "info": {
+          "score": 3,
+          "ratedBy": "sabawoon",
+          "ratedAt": "2026-06-09T17:05:34.445Z"
+        }
+      },
+      "feedback": [
+        {
+          "id": "fb-1781020470061",
+          "moduleId": "opr",
+          "sectionId": "archive",
+          "author": "sabawoon",
+          "role": "client",
+          "message": "adsf;asdf",
+          "status": "open",
+          "createdAt": "2026-06-09T15:54:30.061Z"
+        }
+      ],
+      "signOffPersonnel": [],
+      "auditLog": [
+        {
+          "action": "topic_score_updated",
+          "actor": "sabawoon",
+          "role": "client",
+          "detail": "info: 3/3",
+          "id": "audit-1781024734445",
+          "timestamp": "2026-06-09T17:05:34.445Z"
+        },
+        {
+          "id": "audit-1781020470061",
+          "action": "feedback_added",
+          "actor": "sabawoon",
+          "role": "client",
+          "detail": "adsf;asdf",
+          "timestamp": "2026-06-09T15:54:30.061Z"
+        }
+      ]
+    }
+  }
+}

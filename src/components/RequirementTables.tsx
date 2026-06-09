@@ -1,10 +1,17 @@
 import type {
   BusinessRule,
+  DeliverableItem,
+  EdgeCase,
+  IntegrationRow,
+  PermissionRow,
+  ReportDefinition,
   RequirementField,
   RoleDefinition,
   StatusTransition,
+  ValidationRule,
   Workflow,
 } from "@/types/requirements";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 export function FieldTable({ fields }: { fields: RequirementField[] }) {
   return (
@@ -117,10 +124,16 @@ export function WorkflowCard({ workflow }: { workflow: Workflow }) {
             </div>
           )}
         </dl>
-        {workflow.flowDiagram && (
-          <div className="mb-4 rounded-lg bg-slate-900 px-4 py-3 font-mono text-xs leading-relaxed text-sky-100">
-            {workflow.flowDiagram}
+        {workflow.mermaid ? (
+          <div className="mb-4">
+            <MermaidDiagram chart={workflow.mermaid} />
           </div>
+        ) : (
+          workflow.flowDiagram && (
+            <div className="mb-4 rounded-lg bg-slate-900 px-4 py-3 font-mono text-xs leading-relaxed text-sky-100">
+              {workflow.flowDiagram}
+            </div>
+          )
         )}
         {workflow.steps && workflow.steps.length > 0 && (
           <div className="overflow-x-auto rounded-lg border border-slate-100">
@@ -287,6 +300,187 @@ export function LifecycleTable({
                 </code>
               </td>
               <td className="px-4 py-3 text-slate-500">{t.actor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function PermissionsTable({ rows }: { rows: PermissionRow[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3 text-left">Action</th>
+            <th className="px-4 py-3 text-center">Archive Clerk</th>
+            <th className="px-4 py-3 text-center">Executive</th>
+            <th className="px-4 py-3 text-center">Dept Staff</th>
+            <th className="px-4 py-3 text-center">Auditor</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {rows.map((r) => (
+            <tr key={r.action}>
+              <td className="px-4 py-3 text-slate-700">{r.action}</td>
+              <td className="px-4 py-3 text-center font-mono text-xs">{r.archiveClerk}</td>
+              <td className="px-4 py-3 text-center font-mono text-xs">{r.executive}</td>
+              <td className="px-4 py-3 text-center font-mono text-xs">{r.deptStaff}</td>
+              <td className="px-4 py-3 text-center font-mono text-xs">{r.auditor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="border-t border-slate-100 px-4 py-2 text-xs text-slate-400">
+        C = Create · R = Read · U = Update · A = Approve · E = Export · — = No access
+      </p>
+    </div>
+  );
+}
+
+export function ReportsTable({ reports }: { reports: ReportDefinition[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3">ID</th>
+            <th className="px-4 py-3">Report</th>
+            <th className="px-4 py-3">Filters</th>
+            <th className="px-4 py-3">Columns</th>
+            <th className="px-4 py-3">Export</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {reports.map((r) => (
+            <tr key={r.id}>
+              <td className="px-4 py-3 font-mono text-xs text-sky-700">{r.id}</td>
+              <td className="px-4 py-3">
+                <p className="font-medium text-slate-800">{r.name}</p>
+                <p className="text-xs text-slate-500">{r.purpose}</p>
+              </td>
+              <td className="px-4 py-3 text-slate-600">{r.filters}</td>
+              <td className="px-4 py-3 text-xs text-slate-500">{r.columns}</td>
+              <td className="px-4 py-3 text-slate-600">{r.export}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function ValidationTable({ rules }: { rules: ValidationRule[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3">Field</th>
+            <th className="px-4 py-3">Validation</th>
+            <th className="px-4 py-3">UI behaviour</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {rules.map((r) => (
+            <tr key={r.field}>
+              <td className="px-4 py-3 font-mono text-xs text-sky-800">{r.field}</td>
+              <td className="px-4 py-3 text-slate-700">{r.rule}</td>
+              <td className="px-4 py-3 text-slate-500">{r.uiBehavior ?? "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function IntegrationsTable({ rows }: { rows: IntegrationRow[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3">ID</th>
+            <th className="px-4 py-3">Direction</th>
+            <th className="px-4 py-3">Module</th>
+            <th className="px-4 py-3">Data</th>
+            <th className="px-4 py-3">When</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {rows.map((r) => (
+            <tr key={r.id}>
+              <td className="px-4 py-3 font-mono text-xs">{r.id}</td>
+              <td className="px-4 py-3 text-slate-600">{r.direction}</td>
+              <td className="px-4 py-3 font-medium text-slate-800">{r.module}</td>
+              <td className="px-4 py-3 text-slate-600">{r.data}</td>
+              <td className="px-4 py-3 text-slate-500">
+                {r.when}
+                {r.note && (
+                  <span className="mt-0.5 block text-xs text-amber-600">{r.note}</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function EdgeCasesTable({ cases }: { cases: EdgeCase[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3">ID</th>
+            <th className="px-4 py-3">Scenario</th>
+            <th className="px-4 py-3">Expected behaviour</th>
+            <th className="px-4 py-3">Handler</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {cases.map((c) => (
+            <tr key={c.id}>
+              <td className="px-4 py-3 font-mono text-xs text-sky-700">{c.id}</td>
+              <td className="px-4 py-3 text-slate-700">{c.scenario}</td>
+              <td className="px-4 py-3 text-slate-600">{c.behavior}</td>
+              <td className="px-4 py-3 text-slate-500">{c.handler}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function DeliverablesTable({ items }: { items: DeliverableItem[] }) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <th className="px-4 py-3">Deliverable</th>
+            <th className="px-4 py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {items.map((d) => (
+            <tr key={d.item}>
+              <td className="px-4 py-3 text-slate-700">{d.item}</td>
+              <td className="px-4 py-3">
+                {d.done === true ? (
+                  <span className="text-emerald-600">Done</span>
+                ) : d.done === "partial" ? (
+                  <span className="text-amber-600">Partial</span>
+                ) : (
+                  <span className="text-slate-400">Pending</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
