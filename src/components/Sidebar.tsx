@@ -80,7 +80,7 @@ export function Sidebar() {
                     <span className="font-mono text-xs text-slate-400">
                       {mod.code}
                     </span>{" "}
-                    {mod.name}
+                    {mod.nameDari ?? mod.name}
                   </span>
                 </Link>
                 {modActive && (
@@ -100,7 +100,7 @@ export function Sidebar() {
                           >
                             <ChevronRight className="h-3 w-3" />
                             <FileText className="h-3 w-3" />
-                            {sec.name}
+                            {sec.nameDari ?? sec.name}
                           </Link>
                         </li>
                       );

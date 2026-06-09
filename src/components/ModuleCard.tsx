@@ -22,9 +22,11 @@ export function ModuleCard({ module: mod }: { module: ModuleDefinition }) {
         </div>
       </div>
       <p className="font-mono text-xs font-semibold text-sky-600">{mod.code}</p>
-      <h3 className="mt-1 text-lg font-bold text-slate-900">{mod.name}</h3>
+      <h3 className="mt-1 text-lg font-bold text-slate-900">
+        {mod.nameDari ?? mod.name}
+      </h3>
       {mod.nameDari && (
-        <p className="mt-0.5 text-sm text-slate-500">{mod.nameDari}</p>
+        <p className="text-sm text-slate-500">{mod.name}</p>
       )}
       <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 line-clamp-3">
         {mod.overview}

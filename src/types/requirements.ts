@@ -121,6 +121,14 @@ export interface SubOffice {
   description: string;
 }
 
+export interface GeneralStandard {
+  id: string;
+  title: string;
+  titleDari?: string;
+  description: string;
+  example?: string;
+}
+
 export interface ModuleDefinition {
   id: string;
   code: string;
@@ -135,6 +143,10 @@ export interface ModuleDefinition {
   purpose: string;
   overview: string;
   purposes: string[];
+  /** Module-wide conventions — applies to all sub-offices (dates, numbering, etc.) */
+  generalStandards?: GeneralStandard[];
+  /** Module-wide business rules — not repeated in individual sections */
+  globalBusinessRules?: BusinessRule[];
   executives: ExecutiveRole[];
   subOffices: SubOffice[];
   sections: SectionDefinition[];

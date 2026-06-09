@@ -1,18 +1,15 @@
 import type { SectionDefinition } from "@/types/requirements";
-import { HIJRI_DATE_EXAMPLE, HIJRI_DATE_FORMAT } from "@/types/requirements";
-
-const hijriRule = `Hijri (Shamsi) format ${HIJRI_DATE_FORMAT} — e.g. ${HIJRI_DATE_EXAMPLE}`;
 
 export const archiveSection: SectionDefinition = {
   id: "archive",
   name: "Archive",
   nameDari: "آرشیف",
   description:
-    "Sub-office of ریایست اجرایه (Executive Directorate). Registers all internal inquiries and external outgoing correspondence. Current process uses Paper 1.1 and a physical book register.",
+    "Sub-office of ریایست اجرایه. Registers internal inquiries and external outgoing correspondence. Current process uses Paper 1.1 and a physical book register.",
   status: "draft",
   currentTool: "Paper 1.1 / physical book register",
   summary: [
-    "Internal inquiries registered on Paper 1.1 with Hijri dates (1405/02/19 format)",
+    "Internal inquiries registered on Paper 1.1",
     "Flow: create + attach → executive approval → send to department → optional result",
     "User selects one of four executives for approval at creation",
     "External outgoing register tracks letters leaving ENCC to outside parties",
@@ -86,13 +83,12 @@ export const archiveSection: SectionDefinition = {
         },
         {
           name: "record_date",
-          label: "Date (Hijri)",
+          label: "Date",
           labelDari: "تاریخ",
-          meaning: "Date of inquiry registration — Solar Hijri calendar",
-          type: "hijri_date",
+          meaning: "Date of inquiry registration",
+          type: "date",
           required: true,
-          example: HIJRI_DATE_EXAMPLE,
-          rules: hijriRule,
+          example: "1405/02/19",
         },
         {
           name: "related_department",
@@ -138,7 +134,7 @@ export const archiveSection: SectionDefinition = {
           meaning: "Outcome after department responds — optional",
           type: "longtext",
           required: false,
-          example: "Report received and filed on 1405/03/01",
+          example: "Report received and filed",
         },
         {
           name: "form_reference",
@@ -195,13 +191,12 @@ export const archiveSection: SectionDefinition = {
         },
         {
           name: "record_date",
-          label: "Date (Hijri)",
+          label: "Date",
           labelDari: "تاریخ",
-          meaning: "Date of registration or send — Solar Hijri calendar",
-          type: "hijri_date",
+          meaning: "Date of registration or send",
+          type: "date",
           required: true,
-          example: HIJRI_DATE_EXAMPLE,
-          rules: hijriRule,
+          example: "1405/02/19",
         },
         {
           name: "result",
@@ -233,13 +228,13 @@ export const archiveSection: SectionDefinition = {
       endState: "Closed — optionally with result recorded",
       currentTool: "Paper 1.1 / physical book register",
       flowDiagram:
-        "Create record (Hijri date + fields + attachment) → Submit to executive → Executive approve/reject → Send to related department → (Optional) Record result → Close",
+        "Create record (fields + attachment) → Submit to executive → Executive approve/reject → Send to related department → (Optional) Record result → Close",
       steps: [
         {
           step: 1,
           actor: "Archive Clerk",
           action: "Create record — fill all fields and attach file",
-          input: "Ext. doc no., description, Hijri date, department, executive, attachment",
+          input: "Ext. doc no., description, date, department, executive, attachment",
           output: "Draft record with ENCC internal inquiry number",
         },
         {
@@ -290,13 +285,13 @@ export const archiveSection: SectionDefinition = {
       endState: "Sent — optionally with result when reply received",
       currentTool: "Paper 1.1 / physical book register",
       flowDiagram:
-        "Create record (Hijri date, dept, destination, description, attachment) → Register & send → (Optional) Record result",
+        "Create record (dept, destination, description, date, attachment) → Register & send → (Optional) Record result",
       steps: [
         {
           step: 1,
           actor: "Archive Clerk",
-          action: "Create outgoing record with Hijri date and attachment",
-          input: "Department, destination, description, Hijri date, file",
+          action: "Create outgoing record with attachment",
+          input: "Department, destination, description, date, file",
           output: "Registered with ENCC outgoing number",
         },
         {
@@ -331,7 +326,7 @@ export const archiveSection: SectionDefinition = {
       action: "approve",
       to: "approved",
       actor: "Assigned executive",
-      notes: "approved_by and Hijri timestamp logged",
+      notes: "approved_by and timestamp logged",
     },
     {
       entity: "Internal Archive",
@@ -363,7 +358,7 @@ export const archiveSection: SectionDefinition = {
       action: "register & send",
       to: "sent",
       actor: "Archive Clerk",
-      notes: "Hijri date + attachment required",
+      notes: "Date + attachment required",
     },
     {
       entity: "External Archive",
@@ -391,48 +386,41 @@ export const archiveSection: SectionDefinition = {
     },
     {
       id: "BR-OPR-003",
-      rule: "All date fields must use Hijri format YYYY/MM/DD (e.g. 1405/02/19)",
-      trigger: "Save / Submit",
-      response: "Block invalid format",
-      severity: "Critical",
-    },
-    {
-      id: "BR-OPR-004",
       rule: "Cannot submit internal record without file attachment",
       trigger: "Submit",
       response: "Block",
       severity: "Critical",
     },
     {
-      id: "BR-OPR-005",
-      rule: "Approval must record approved_by and Hijri timestamp",
+      id: "BR-OPR-004",
+      rule: "Approval must record approved_by and timestamp",
       trigger: "Approve",
       response: "Require fields",
       severity: "Critical",
     },
     {
-      id: "BR-OPR-006",
+      id: "BR-OPR-005",
       rule: "Rejection requires reason note",
       trigger: "Reject",
       response: "Require reason",
       severity: "High",
     },
     {
-      id: "BR-OPR-007",
+      id: "BR-OPR-006",
       rule: "After executive approval, record must be sent to related_department",
       trigger: "Approve",
       response: "Auto-route or clerk action",
       severity: "High",
     },
     {
-      id: "BR-OPR-008",
+      id: "BR-OPR-007",
       rule: "Inquiry result is optional — record can close without result",
       trigger: "Close",
       response: "Allow close with empty result",
       severity: "Medium",
     },
     {
-      id: "BR-OPR-009",
+      id: "BR-OPR-008",
       rule: "Only assigned executive can approve routed internal item",
       trigger: "Approve attempt",
       response: "Block unauthorized",

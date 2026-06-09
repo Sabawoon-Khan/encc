@@ -2,51 +2,67 @@ import type { GlossaryTerm } from "@/types/requirements";
 
 export const glossary: GlossaryTerm[] = [
   {
-    id: "executive-tier",
-    term: "Executive Tier",
-    termDari: "مدیران ارشد",
+    id: "executive-directorate",
+    term: "Executive Directorate",
+    termDari: "ریایست اجرایه",
     definition:
-      "The four HQ executives (CEO, Commercial, Operations/Admin, Financial) who share equal approval authority within OPR workflows.",
+      "HQ management section (OPR module) controlled by general managers and executives. Contains sub-offices: امریت اجرایه and آرشیف.",
     usedIn: ["OPR"],
   },
   {
     id: "execution-office",
     term: "Execution Office",
-    termDari: "مراقبت اجرایی",
+    termDari: "امریت اجرایه",
     definition:
-      "Supporting office that prepares documents and routes them to executives for approval. Does not hold final approval authority.",
+      "Sub-office of ریایست اجرایه. Prepares documents and routes them to executives for approval.",
     usedIn: ["OPR"],
+  },
+  {
+    id: "archive",
+    term: "Archive",
+    termDari: "آرشیف",
+    definition:
+      "Sub-office of ریایست اجرایه. Registers internal inquiries (Paper 1.1) and external outgoing correspondence. Current tool: physical book register.",
+    usedIn: ["OPR", "Archive"],
+  },
+  {
+    id: "executive-tier",
+    term: "Executive Tier",
+    termDari: "مدیران ارشد",
+    definition:
+      "Four HQ executives (CEO, Commercial, Operations/Admin, Financial) with equal approval authority in OPR workflows.",
+    usedIn: ["OPR"],
+  },
+  {
+    id: "hijri-date",
+    term: "Hijri Date (Shamsi)",
+    termDari: "تاریخ هجری شمسی",
+    definition:
+      "All date fields across ریایست اجرایه use Solar Hijri (Shamsi) format YYYY/MM/DD — e.g. 1405/02/19. Defined once in module General Information, not repeated per section.",
+    usedIn: ["OPR", "Archive"],
+  },
+  {
+    id: "paper-11",
+    term: "Paper 1.1",
+    termDari: "فورم ۱.۱",
+    definition:
+      "Physical form and book register used for internal archive inquiries. Current tool alongside physical book register.",
+    usedIn: ["Archive"],
   },
   {
     id: "internal-archive",
     term: "Internal Archive",
     termDari: "آرشیف داخلی",
     definition:
-      "Register for inquiries and requests within ENCC or between internal offices. Uses form Paper 1.1. Tracks external org. document number plus ENCC internal inquiry number.",
-    usedIn: ["OPR", "Archive"],
+      "Register for inquiries within ENCC. Workflow: create + attach → executive approval → send to department → optional result.",
+    usedIn: ["Archive"],
   },
   {
     id: "external-archive",
     term: "External Archive (Outgoing)",
-    termDari: "آرشیف خارجی / خروجی",
+    termDari: "آرشیف خارجی",
     definition:
-      "Register for correspondence leaving ENCC to external organizations or individuals. Optional result field when reply is received.",
-    usedIn: ["OPR", "Archive"],
-  },
-  {
-    id: "external-doc-number",
-    term: "External Document Number",
-    termDari: "شماره سند خارجی",
-    definition:
-      "The reference number assigned by the other organization on their document when ENCC sends or receives an inquiry.",
-    usedIn: ["Archive"],
-  },
-  {
-    id: "internal-inquiry-number",
-    term: "Internal Inquiry Number",
-    termDari: "شماره استعلام داخلی",
-    definition:
-      "Auto-generated ENCC reference number for tracking an internal archive inquiry (e.g. INQ-OPR-2026-0088).",
+      "Register for correspondence leaving ENCC to external parties. Optional result when reply received.",
     usedIn: ["Archive"],
   },
   {
@@ -54,7 +70,7 @@ export const glossary: GlossaryTerm[] = [
     term: "Assigned Executive",
     termDari: "مدیر مسئول تأیید",
     definition:
-      "One of the four executives selected at record creation to receive the item for approval. Reflects organizational responsibility, not hierarchy.",
+      "One of four executives selected at creation. Item is sent to them for approval before routing to department.",
     usedIn: ["OPR", "Archive"],
   },
   {
@@ -62,29 +78,14 @@ export const glossary: GlossaryTerm[] = [
     term: "Inquiry Result",
     termDari: "نتیجه استعلام",
     definition:
-      "Outcome text recorded when an internal archive inquiry is completed. Required before closing the record.",
+      "Optional outcome text recorded after the related department responds.",
     usedIn: ["Archive"],
-  },
-  {
-    id: "destination",
-    term: "Destination (Sending Place)",
-    termDari: "محل ارسال / مقصد",
-    definition:
-      "External organization or person receiving an outgoing archive document.",
-    usedIn: ["Archive"],
-  },
-  {
-    id: "wbt",
-    term: "WBT — Weighbridge Ticketing",
-    definition:
-      "Tier 1 module for weighbridge operations at Main Site. Source of net weight and coal movement evidence.",
-    usedIn: ["WBT"],
   },
   {
     id: "template-v22",
     term: "Shams Hilal Template v2.2",
     definition:
-      "Controlled business requirements package format. One file per module with sections 5–25, evidence log, and ENCC sign-off.",
+      "Controlled business requirements package. Sections 5–25 per module with evidence log and ENCC sign-off.",
     usedIn: ["All modules"],
   },
 ];
