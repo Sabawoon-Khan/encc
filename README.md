@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ENCC ERP Requirements Hub
 
-## Getting Started
+Living documentation portal for ENCC ERP business requirements — built for analysts, client workshops, and developers.
 
-First, run the development server:
+## Quick start
 
 ```bash
+cd encc-requirements
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What this project does
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Module overview pages** — explain what each department does, executives, and included sections
+- **Section detail pages** — fields, workflows, business rules (Template v2.2 format)
+- **Glossary** — shared terminology across modules
+- **Evidence uploads** — attach form scans, Paper 1.1 samples, screenshots for developers
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  content/
+    glossary.ts              # Shared terms — edit here
+    modules/
+      index.ts               # Register all modules
+      opr/
+        index.ts             # Operations module metadata
+        archive.ts           # Archive section (fields, workflows, rules)
+  types/requirements.ts      # TypeScript types for all content
+  components/                # UI components
+  app/                       # Next.js pages
+content/
+  evidence-manifest.json     # Upload metadata (auto-updated)
+public/
+  uploads/                   # Uploaded images/PDFs
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding a new module
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create `src/content/modules/{id}/index.ts` with module metadata
+2. Add section files e.g. `src/content/modules/{id}/sales.ts`
+3. Register in `src/content/modules/index.ts`:
 
-## Deploy on Vercel
+```ts
+import { newModule } from "./new-module";
+export const modules = [oprModule, newModule];
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Adding a new section to an existing module
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create `src/content/modules/opr/sales.ts` exporting a `SectionDefinition`
+2. Import and add to `sections` array in `src/content/modules/opr/index.ts`
+
+## Content format
+
+Each section follows Shams Hilal Template v2.2:
+
+- Summary bullets
+- Entities with field tables (name, type, required, example, rules)
+- Workflows with steps
+- Business rules (BR-{MODULE}-001)
+- Status: `draft` | `in_review` | `verified` | `pending`
+
+## Evidence uploads
+
+On any documented section page, use **Upload Evidence** to attach:
+
+- Paper form scans (e.g. Archive Paper 1.1)
+- Outgoing letter templates
+- Workshop photos
+
+Files save to `public/uploads/{moduleId}/{sectionId}/` and metadata to `content/evidence-manifest.json`.
+
+## Related files
+
+- HTML export (print/PDF): `../encc/new/encc-module-opr-operations.html`
+- Template reference: `../encc/new/ENCC ERP Requirements Output Template__V2. 2.pdf`
+
+## Scripts
+
+| Command       | Description          |
+|---------------|----------------------|
+| `npm run dev` | Development server   |
+| `npm run build` | Production build   |
+| `npm start`   | Run production build |
+
+---
+
+Yaqeen Technology · ENCC ERP Requirements Gathering · Template v2.2
