@@ -22,6 +22,7 @@ import {
 } from "@/components/RequirementTables";
 import { EvidenceGallery } from "@/components/EvidenceGallery";
 import { ImageUpload } from "@/components/ImageUpload";
+import { QuestionsPanel } from "@/components/QuestionsPanel";
 
 function rvActions(enabled: boolean, topicId: string, label: string) {
   return enabled ? <TopicReviewActions topicId={topicId} label={label} /> : undefined;
@@ -289,6 +290,13 @@ export default async function SectionPage({
           <EvidenceGallery items={evidence} canDelete={!locked || sessionRole === "admin"} />
         </div>
       </TemplateSection>
+
+      {rv && (
+        <QuestionsPanel
+          scopeLabel={`${section.nameDari ?? section.name} section`}
+          sessionRole={sessionRole}
+        />
+      )}
     </SectionPageShell>
   );
 }

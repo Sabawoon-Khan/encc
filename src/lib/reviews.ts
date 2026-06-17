@@ -1,20 +1,29 @@
 import { readFile, writeFile } from "fs/promises";
-import path from "path";
 import type {
   AuditEntry,
   FeedbackEntry,
+  FeedbackReply,
   ReviewsStore,
   SectionReview,
   SectionScores,
 } from "@/types/reviews";
-import { reviewKey } from "@/types/reviews";
+import {
+  MODULE_QUESTIONS_SECTION_ID,
+  reviewKey,
+  isTopicScoreLocked,
+} from "@/types/reviews";
+import {
+  ensureLocalDataDir,
+  getReviewsStorePath,
+} from "@/lib/runtimeData";
 
-const STORE_PATH = path.join(process.cwd(), "content/reviews.json");
-const UPLOADS_DIR = path.join(process.cwd(), "public/uploads");
+function storePath() {
+  return getReviewsStorePath();
+}
 
 export async function readReviewsStore(): Promise<ReviewsStore> {
   try {
-    const raw = await readFile(STORE_PATH, "utf-8");
+    const raw = await readFile(storePath(), "utf-8");
     const data = JSON.parse(raw) as ReviewsStore & {
       modules?: Record<
         string,
@@ -48,7 +57,8 @@ export async function readReviewsStore(): Promise<ReviewsStore> {
 }
 
 async function writeStore(store: ReviewsStore) {
-  await writeFile(STORE_PATH, JSON.stringify(store, null, 2), "utf-8");
+  await ensureLocalDataDir();
+  await writeFile(storePath(), JSON.stringify(store, null, 2), "utf-8");
 }
 
 function emptyReview(moduleId: string, sectionId: string): SectionReview {
@@ -80,9 +90,8 @@ export async function getSectionReview(
   return { ...review, topicScores: review.topicScores ?? {} };
 }
 
-/** @deprecated use getSectionReview */
-export async function getModuleReview(moduleId: string) {
-  return getSectionReview(moduleId, "archive");
+export async function getModuleQuestionsReview(moduleId: string) {
+  return getSectionReview(moduleId, MODULE_QUESTIONS_SECTION_ID);
 }
 
 export function isSectionLocked(review: SectionReview): boolean {
@@ -118,6 +127,9 @@ async function save(review: SectionReview) {
   await writeStore(store);
 }
 
+
+export { isTopicScoreLocked } from "@/types/reviews";
+
 export async function updateScores(
   moduleId: string,
   sectionId: string,
@@ -129,9 +141,13 @@ export async function updateScores(
   if (isSectionLocked(review) && role !== "admin") {
     throw new Error("Section is locked");
   }
+  if (review.scoresLocked && role !== "admin") {
+    throw new Error("Scores are locked and cannot be changed");
+  }
   review = {
     ...review,
     scores: { ...review.scores, ...scores, ratedAt: new Date().toISOString() },
+    scoresLocked: true,
     approvalStatus: review.approvalStatus === "draft" ? "in_review" : review.approvalStatus,
   };
   review = appendAudit(review, { action: "scores_updated", actor, role });
@@ -152,6 +168,10 @@ export async function updateTopicScore(
   if (isSectionLocked(review) && role !== "admin") {
     throw new Error("Section is locked");
   }
+  const existing = review.topicScores?.[data.topicId];
+  if (isTopicScoreLocked(existing) && role !== "admin") {
+    throw new Error("Score for this part is locked");
+  }
   review = {
     ...review,
     topicScores: {
@@ -160,6 +180,7 @@ export async function updateTopicScore(
         score: data.score,
         ratedBy: data.ratedBy,
         ratedAt: new Date().toISOString(),
+        locked: true,
       },
     },
     approvalStatus: review.approvalStatus === "draft" ? "in_review" : review.approvalStatus,
@@ -182,12 +203,9 @@ export async function addFeedback(
   }
 ) {
   let review = await getSectionReview(moduleId, sectionId);
-  if (review.approvalStatus === "approved" && review.locked && entry.role !== "admin") {
-    throw new Error("Section is locked");
-  }
   const item: FeedbackEntry = {
     ...entry,
-    id: `fb-${Date.now()}`,
+    id: `fb-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     moduleId,
     sectionId,
     status: entry.status ?? "open",
@@ -219,8 +237,29 @@ export async function replyFeedback(
   let review = await getSectionReview(moduleId, sectionId);
   const idx = review.feedback.findIndex((f) => f.id === feedbackId);
   if (idx === -1) throw new Error("Message not found");
+  const existing = review.feedback[idx];
+  const priorReplies =
+    existing.replies ??
+    (existing.reply
+      ? [
+          {
+            id: `${existing.id}-legacy`,
+            text: existing.reply,
+            author: "Yaqeen",
+            createdAt: existing.createdAt,
+          },
+        ]
+      : []);
+  const newReply: FeedbackReply = {
+    id: `reply-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    text: reply,
+    author: actor,
+    createdAt: new Date().toISOString(),
+  };
+  const replies = [...priorReplies, newReply];
   review.feedback[idx] = {
-    ...review.feedback[idx],
+    ...existing,
+    replies,
     reply,
     status: "answered",
   };
@@ -301,6 +340,7 @@ export async function unlockSection(moduleId: string, sectionId: string, actor: 
   review = {
     ...review,
     locked: false,
+    scoresLocked: false,
     approvalStatus: "in_review",
     paymentMilestone: "pending",
     approvedBy: undefined,

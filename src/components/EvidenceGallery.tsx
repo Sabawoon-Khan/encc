@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { FileText, Trash2 } from "lucide-react";
 import type { EvidenceItem } from "@/types/requirements";
+import { uploadPublicUrl } from "@/lib/clientEnv";
 
 export function EvidenceGallery({
   items,
@@ -54,7 +55,7 @@ export function EvidenceGallery({
       <div className="grid gap-3 sm:grid-cols-2">
         {items.map((item) => {
           const isPdf = item.filename.toLowerCase().endsWith(".pdf");
-          const src = `/uploads/${item.filename}`;
+          const src = uploadPublicUrl(item.filename);
 
           return (
             <div

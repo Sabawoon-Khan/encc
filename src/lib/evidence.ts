@@ -1,13 +1,23 @@
 import { readFile, writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import type { EvidenceItem, EvidenceManifest } from "@/types/requirements";
+import {
+  ensureLocalDataDir,
+  getEvidenceManifestPath,
+  getUploadsDir,
+} from "@/lib/runtimeData";
 
-const MANIFEST_PATH = path.join(process.cwd(), "content/evidence-manifest.json");
-const UPLOADS_DIR = path.join(process.cwd(), "public/uploads");
+function manifestPath() {
+  return getEvidenceManifestPath();
+}
+
+function uploadsDir() {
+  return getUploadsDir();
+}
 
 export async function readManifest(): Promise<EvidenceManifest> {
   try {
-    const raw = await readFile(MANIFEST_PATH, "utf-8");
+    const raw = await readFile(manifestPath(), "utf-8");
     return JSON.parse(raw) as EvidenceManifest;
   } catch {
     return { items: [] };
@@ -15,7 +25,8 @@ export async function readManifest(): Promise<EvidenceManifest> {
 }
 
 export async function writeManifest(manifest: EvidenceManifest): Promise<void> {
-  await writeFile(MANIFEST_PATH, JSON.stringify(manifest, null, 2), "utf-8");
+  await ensureLocalDataDir();
+  await writeFile(manifestPath(), JSON.stringify(manifest, null, 2), "utf-8");
 }
 
 export async function saveEvidence(
@@ -24,7 +35,8 @@ export async function saveEvidence(
 ): Promise<EvidenceItem> {
   const ext = path.extname(file.name) || ".bin";
   const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
-  const dir = path.join(UPLOADS_DIR, meta.moduleId, meta.sectionId);
+  const baseDir = uploadsDir();
+  const dir = path.join(baseDir, meta.moduleId, meta.sectionId);
   await mkdir(dir, { recursive: true });
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -61,7 +73,7 @@ export async function deleteEvidence(id: string): Promise<boolean> {
   if (idx === -1) return false;
   const item = manifest.items[idx];
   try {
-    await unlink(path.join(UPLOADS_DIR, item.filename));
+    await unlink(path.join(uploadsDir(), item.filename));
   } catch {
     /* file may already be gone */
   }

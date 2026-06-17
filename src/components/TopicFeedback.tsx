@@ -2,17 +2,15 @@
 
 import { useState } from "react";
 import { MessageSquare } from "lucide-react";
+import { AnswerReplyModal } from "@/components/AnswerReplyModal";
 import { Modal } from "@/components/ui/Modal";
+import { QuestionThreadItem } from "@/components/QuestionThreadItem";
+import type { FeedbackEntry } from "@/types/reviews";
+import { getFeedbackReplies, hasUnansweredFeedback } from "@/types/reviews";
 import {
   feedbackForTopic,
   useOptionalSectionReviewContext,
 } from "@/components/SectionReviewContext";
-
-const STATUS_COLORS = {
-  open: "bg-amber-50 text-amber-800 ring-amber-200",
-  answered: "bg-sky-50 text-sky-800 ring-sky-200",
-  closed: "bg-slate-100 text-slate-600 ring-slate-200",
-};
 
 interface TopicFeedbackProps {
   /** Matches TemplateSection id, e.g. "objectives", "workflows" */
@@ -27,13 +25,14 @@ export function TopicFeedback({ topicId, label }: TopicFeedbackProps) {
   const [view, setView] = useState<"form" | "list">("form");
   const [author, setAuthor] = useState("");
   const [text, setText] = useState("");
+  const [answering, setAnswering] = useState<FeedbackEntry | null>(null);
 
   if (!ctx) return null;
 
   const { review, busy, error, post, locked, sessionRole } = ctx;
   const isAdmin = sessionRole === "admin";
   const items = feedbackForTopic(review.feedback, topicId);
-  const openCount = items.filter((f) => f.status === "open").length;
+  const openCount = items.filter((f) => hasUnansweredFeedback(f)).length;
 
   async function submit() {
     await post({
@@ -138,49 +137,13 @@ export function TopicFeedback({ topicId, label }: TopicFeedbackProps) {
             ) : (
               <ul className="space-y-3">
                 {items.map((fb) => (
-                  <li
+                  <QuestionThreadItem
                     key={fb.id}
-                    className="rounded-lg border border-slate-100 px-4 py-3 text-sm"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-800">{fb.author}</span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ring-1 ${STATUS_COLORS[fb.status]}`}
-                      >
-                        {fb.status}
-                      </span>
-                      <span className="text-xs text-slate-400">
-                        {new Date(fb.createdAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-slate-600">{fb.message}</p>
-                    {fb.reply && (
-                      <p className="mt-2 border-l-2 border-sky-200 pl-3 text-slate-600">
-                        <span className="text-xs font-medium text-sky-700">Yaqeen: </span>
-                        {fb.reply}
-                      </p>
-                    )}
-                    {isAdmin && !fb.reply && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => {
-                          const reply = prompt("Your reply:");
-                          if (reply?.trim()) {
-                            post({
-                              action: "reply",
-                              feedbackId: fb.id,
-                              reply: reply.trim(),
-                              actor: "Yaqeen",
-                            });
-                          }
-                        }}
-                        className="mt-2 text-xs font-medium text-sky-600 hover:underline"
-                      >
-                        Reply
-                      </button>
-                    )}
-                  </li>
+                    entry={fb}
+                    isAdmin={isAdmin}
+                    busy={busy}
+                    onAnswer={setAnswering}
+                  />
                 ))}
               </ul>
             )}
@@ -190,12 +153,35 @@ export function TopicFeedback({ topicId, label }: TopicFeedbackProps) {
                 onClick={() => setView("form")}
                 className="mt-4 w-full rounded-lg border border-sky-200 bg-sky-50 py-2 text-sm font-medium text-sky-700 hover:bg-sky-100"
               >
-                Add feedback
+                Add another question
               </button>
             )}
           </div>
         )}
       </Modal>
+
+      {answering && (
+        <AnswerReplyModal
+          open={!!answering}
+          onClose={() => setAnswering(null)}
+          question={answering.message}
+          authorName={answering.author}
+          busy={busy}
+          title={
+            getFeedbackReplies(answering).length > 0
+              ? "Add another answer"
+              : "Write your answer"
+          }
+          onSubmit={async (reply) => {
+            await post({
+              action: "reply",
+              feedbackId: answering.id,
+              reply,
+              actor: "Yaqeen",
+            });
+          }}
+        />
+      )}
     </>
   );
 }

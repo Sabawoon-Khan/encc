@@ -10,14 +10,22 @@ import {
   updateScores,
   updateTopicScore,
 } from "@/lib/reviews";
-import { getSection } from "@/content/modules";
+import { getModule, getSection } from "@/content/modules";
+import { MODULE_QUESTIONS_SECTION_ID } from "@/types/reviews";
+
+function isValidReviewTarget(moduleId: string, sectionId: string) {
+  if (sectionId === MODULE_QUESTIONS_SECTION_ID) {
+    return !!getModule(moduleId);
+  }
+  return !!getSection(moduleId, sectionId);
+}
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ moduleId: string; sectionId: string }> }
 ) {
   const { moduleId, sectionId } = await params;
-  if (!getSection(moduleId, sectionId)) {
+  if (!isValidReviewTarget(moduleId, sectionId)) {
     return NextResponse.json({ error: "Section not found" }, { status: 404 });
   }
   const review = await getSectionReview(moduleId, sectionId);
@@ -35,7 +43,7 @@ export async function POST(
   }
 
   const { moduleId, sectionId } = await params;
-  if (!getSection(moduleId, sectionId)) {
+  if (!isValidReviewTarget(moduleId, sectionId)) {
     return NextResponse.json({ error: "Section not found" }, { status: 404 });
   }
 

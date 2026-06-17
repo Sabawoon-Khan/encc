@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local dev data (never commit — isolated from hosted reviews/uploads)
+/.local-data/
+/public/uploads-local/

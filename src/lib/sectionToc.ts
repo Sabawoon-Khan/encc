@@ -20,6 +20,7 @@ export const SECTION_TOC_ITEMS: TocItem[] = [
   { id: "edge-cases", label: "Edge cases" },
   { id: "deliverables", label: "Deliverables" },
   { id: "evidence", label: "Attachments" },
+  { id: "questions", label: "Q&A" },
 ];
 
 export interface SectionTocFlags {
@@ -36,6 +37,7 @@ export interface SectionTocFlags {
   hasMigration?: boolean;
   hasEdgeCases?: boolean;
   hasDeliverables?: boolean;
+  hasQuestions?: boolean;
 }
 
 /** Build visible TOC items from section content flags (server-safe). */
@@ -55,12 +57,14 @@ export function buildSectionTocItems(flags: SectionTocFlags): TocItem[] {
   if (flags.hasEdgeCases) ids.add("edge-cases");
   if (flags.hasDeliverables) ids.add("deliverables");
   ids.add("evidence");
+  if (flags.hasQuestions) ids.add("questions");
 
   return SECTION_TOC_ITEMS.filter((item) => ids.has(item.id));
 }
 
 /** Build flags directly from a section definition (server-safe). */
 export function sectionTocFlagsFromSection(section: {
+  enableReview?: boolean;
   roles?: unknown[];
   workflows: unknown[];
   entities: unknown[];
@@ -89,5 +93,6 @@ export function sectionTocFlagsFromSection(section: {
     hasMigration: !!section.migration?.length,
     hasEdgeCases: !!section.edgeCases?.length,
     hasDeliverables: !!section.deliverableChecklist?.length,
+    hasQuestions: !!section.enableReview,
   };
 }

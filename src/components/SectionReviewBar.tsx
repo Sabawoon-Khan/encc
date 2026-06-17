@@ -23,6 +23,7 @@ export function SectionReviewBar({ initialReview }: SectionReviewBarProps) {
   const { review, busy, error, post, locked, sessionRole } =
     useSectionReviewContext();
   const isAdmin = sessionRole === "admin";
+  const scoresLocked = review.scoresLocked === true;
 
   const [modal, setModal] = useState<ModalKind>(null);
   const [scores, setScores] = useState({
@@ -104,7 +105,9 @@ export function SectionReviewBar({ initialReview }: SectionReviewBarProps) {
             })}
           </div>
           {scoredCount === 3 && (
-            <span className="text-xs text-slate-400">({scoreTotal}/9)</span>
+            <span className="text-xs text-slate-400">
+              ({scoreTotal}/9){scoresLocked ? " · locked" : ""}
+            </span>
           )}
         </div>
 
@@ -128,14 +131,14 @@ export function SectionReviewBar({ initialReview }: SectionReviewBarProps) {
         )}
 
         <div className="ml-auto flex flex-wrap gap-1.5">
-          {!locked && (
+          {!locked && (!scoresLocked || isAdmin) && (
             <>
               <button
                 type="button"
                 onClick={() => setModal("rate")}
                 className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
               >
-                Rate section
+                {scoresLocked ? "Revise scores" : "Rate section"}
               </button>
               <button
                 type="button"
@@ -165,9 +168,13 @@ export function SectionReviewBar({ initialReview }: SectionReviewBarProps) {
           <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
         )}
         <p className="mb-4 text-sm text-slate-500">
-          Overall section rating (0–3 each). Rate individual parts using the Score button on each
-          section heading.
+          Overall section rating (0–3 each). Scores lock after saving.
         </p>
+        {scoresLocked && !isAdmin && (
+          <p className="mb-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+            These scores are locked.
+          </p>
+        )}
         <div className="space-y-4">
           {SCORE_CRITERIA.map((c) => (
             <div key={c.key}>
@@ -177,6 +184,7 @@ export function SectionReviewBar({ initialReview }: SectionReviewBarProps) {
                   <button
                     key={n}
                     type="button"
+                    disabled={scoresLocked && !isAdmin}
                     onClick={() => setScores((s) => ({ ...s, [c.key]: n }))}
                     title={SCORE_LABELS[n]}
                     className={`h-9 w-9 rounded-lg text-sm font-bold ${

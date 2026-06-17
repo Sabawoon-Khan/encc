@@ -2,8 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ChevronRight, HelpCircle } from "lucide-react";
 import { getModule } from "@/content/modules";
+import { getSessionRole } from "@/lib/auth";
+import { getModuleQuestionsReview } from "@/lib/reviews";
+import { MODULE_QUESTIONS_SECTION_ID } from "@/types/reviews";
 import { StatusBadge, TierBadge } from "@/components/StatusBadge";
 import { GeneralStandardsPanel, InfoTable, TemplateSection } from "@/components/TemplateSection";
+import { SectionReviewProvider } from "@/components/SectionReviewContext";
+import { QuestionsPanel } from "@/components/QuestionsPanel";
 
 export default async function ModulePage({
   params,
@@ -14,7 +19,18 @@ export default async function ModulePage({
   const mod = getModule(moduleId);
   if (!mod) notFound();
 
+  const [questionsReview, sessionRole] = await Promise.all([
+    getModuleQuestionsReview(moduleId),
+    getSessionRole(),
+  ]);
+
   return (
+    <SectionReviewProvider
+      moduleId={moduleId}
+      sectionId={MODULE_QUESTIONS_SECTION_ID}
+      initialReview={questionsReview}
+      sessionRole={sessionRole}
+    >
     <div className="mx-auto max-w-5xl px-6 py-10 lg:px-10">
       <nav className="mb-6 flex items-center gap-1 text-sm text-slate-500">
         <Link href="/" className="hover:text-sky-600">
@@ -215,7 +231,7 @@ export default async function ModulePage({
       )}
 
       {mod.openQuestions.length > 0 && (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
+        <section className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900">
             <HelpCircle className="h-5 w-5 text-amber-600" />
             §22 Open Questions
@@ -231,6 +247,12 @@ export default async function ModulePage({
           </ul>
         </section>
       )}
+
+      <QuestionsPanel
+        scopeLabel={mod.nameDari ?? mod.name}
+        sessionRole={sessionRole}
+      />
     </div>
+    </SectionReviewProvider>
   );
 }
