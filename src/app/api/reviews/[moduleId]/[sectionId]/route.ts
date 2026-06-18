@@ -14,6 +14,9 @@ import { getModule, getSection } from "@/content/modules";
 import { errorMessage } from "@/lib/errors";
 import { MODULE_QUESTIONS_SECTION_ID } from "@/types/reviews";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 function isValidReviewTarget(moduleId: string, sectionId: string) {
   if (sectionId === MODULE_QUESTIONS_SECTION_ID) {
     return !!getModule(moduleId);
@@ -144,9 +147,8 @@ export async function POST(
     }
   } catch (err) {
     console.error("Review action failed:", err);
-    return NextResponse.json(
-      { error: errorMessage(err) },
-      { status: 400 }
-    );
+    const message = errorMessage(err);
+    const status = message.includes("not configured") ? 503 : 400;
+    return NextResponse.json({ error: message }, { status });
   }
 }

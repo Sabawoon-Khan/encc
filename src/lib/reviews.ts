@@ -18,6 +18,7 @@ import {
 } from "@/lib/runtimeData";
 import { getSupabase } from "@/lib/supabase";
 import { useRemoteStore } from "@/lib/dataStore";
+import { isHostedDeployment } from "@/lib/env";
 import { errorMessage } from "@/lib/errors";
 
 function storePath() {
@@ -133,6 +134,66 @@ function emptyReview(moduleId: string, sectionId: string): SectionReview {
   };
 }
 
+/** Old keys from before archive became its own module — merged on read & via scripts/merge-legacy-reviews.mjs */
+const LEGACY_REVIEW_SOURCES: Record<string, { moduleId: string; sectionId: string }[]> = {
+  [reviewKey("archive", "archive")]: [{ moduleId: "opr", sectionId: "archive" }],
+};
+
+function mergeReviewData(primary: SectionReview, legacy: SectionReview): SectionReview {
+  const feedbackById = new Map<string, FeedbackEntry>();
+  for (const fb of [...legacy.feedback, ...primary.feedback]) {
+    feedbackById.set(fb.id, {
+      ...fb,
+      moduleId: primary.moduleId,
+      sectionId: primary.sectionId,
+    });
+  }
+
+  const auditById = new Map<string, AuditEntry>();
+  for (const entry of [...legacy.auditLog, ...primary.auditLog]) {
+    auditById.set(entry.id, entry);
+  }
+
+  return {
+    ...primary,
+    feedback: [...feedbackById.values()].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ),
+    auditLog: [...auditById.values()].sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    ),
+    topicScores: { ...legacy.topicScores, ...primary.topicScores },
+    scores: {
+      completeness: primary.scores.completeness ?? legacy.scores.completeness,
+      accuracy: primary.scores.accuracy ?? legacy.scores.accuracy,
+      signOffReadiness: primary.scores.signOffReadiness ?? legacy.scores.signOffReadiness,
+      ratedBy: primary.scores.ratedBy ?? legacy.scores.ratedBy,
+      ratedAt: primary.scores.ratedAt ?? legacy.scores.ratedAt,
+      notes: primary.scores.notes ?? legacy.scores.notes,
+    },
+    signOffPersonnel: [...primary.signOffPersonnel, ...legacy.signOffPersonnel],
+  };
+}
+
+async function loadLegacyReviews(
+  moduleId: string,
+  sectionId: string,
+  loader: (moduleId: string, sectionId: string) => Promise<SectionReview | null>
+): Promise<SectionReview | null> {
+  const sources = LEGACY_REVIEW_SOURCES[reviewKey(moduleId, sectionId)];
+  if (!sources?.length) return null;
+
+  let merged: SectionReview | null = null;
+  for (const src of sources) {
+    const legacy = await loader(src.moduleId, src.sectionId);
+    if (!legacy) continue;
+    merged = merged
+      ? mergeReviewData(emptyReview(moduleId, sectionId), mergeReviewData(merged, legacy))
+      : legacy;
+  }
+  return merged;
+}
+
 async function getSectionReviewFromSupabase(
   moduleId: string,
   sectionId: string
@@ -161,12 +222,34 @@ export async function getSectionReview(
   sectionId: string
 ): Promise<SectionReview> {
   if (useRemoteStore()) {
-    const review = await getSectionReviewFromSupabase(moduleId, sectionId);
-    return review ?? emptyReview(moduleId, sectionId);
+    const [review, legacy] = await Promise.all([
+      getSectionReviewFromSupabase(moduleId, sectionId),
+      loadLegacyReviews(moduleId, sectionId, getSectionReviewFromSupabase),
+    ]);
+    const base = review ?? emptyReview(moduleId, sectionId);
+    if (legacy) return mergeReviewData(base, legacy);
+    return base;
+  }
+  if (isHostedDeployment()) {
+    throw new Error(
+      "Review storage is not configured for production. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel."
+    );
   }
   const store = await readReviewsFromFile();
   const key = reviewKey(moduleId, sectionId);
   const review = store.sections[key] ?? emptyReview(moduleId, sectionId);
+  const legacySources = LEGACY_REVIEW_SOURCES[key];
+  if (legacySources) {
+    let legacyMerged: SectionReview | null = null;
+    for (const src of legacySources) {
+      const leg = store.sections[reviewKey(src.moduleId, src.sectionId)];
+      if (!leg) continue;
+      legacyMerged = legacyMerged
+        ? mergeReviewData(emptyReview(moduleId, sectionId), mergeReviewData(legacyMerged, leg))
+        : leg;
+    }
+    if (legacyMerged) return mergeReviewData({ ...review, topicScores: review.topicScores ?? {} }, legacyMerged);
+  }
   return { ...review, topicScores: review.topicScores ?? {} };
 }
 
@@ -205,6 +288,11 @@ async function save(review: SectionReview) {
   if (useRemoteStore()) {
     await writeReviewToSupabase(review);
     return;
+  }
+  if (isHostedDeployment()) {
+    throw new Error(
+      "Review storage is not configured for production. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel (or use the built-in defaults)."
+    );
   }
   const store = await readReviewsStore();
   store.sections[reviewKey(review.moduleId, review.sectionId)] = review;

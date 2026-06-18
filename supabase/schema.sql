@@ -1,4 +1,7 @@
 -- ENCC Requirements Hub — run once in Supabase SQL Editor (Dashboard → SQL → New query)
+--
+-- Reviews, scores, feedback, and Q&A are stored in section_reviews.data (JSONB).
+-- There is no separate "feedbacks" table — one row per module/section, e.g. archive/archive.
 
 create table if not exists section_reviews (
   module_id text not null,

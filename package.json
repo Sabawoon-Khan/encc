@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:reviews": "node scripts/seed-reviews.mjs",
+    "merge:reviews": "node scripts/merge-legacy-reviews.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

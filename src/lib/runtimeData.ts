@@ -1,17 +1,13 @@
 import path from "path";
 import { mkdir } from "fs/promises";
 import { siteEnv } from "@/lib/env";
-import { useRemoteStore } from "@/lib/dataStore";
 
 /**
  * When true, reviews/uploads write to `.local-data/` and `public/uploads-local/`.
- * Set ENCC_LOCAL_DATA=true to use isolated local paths in any environment.
- * Dev defaults to `content/` + `public/uploads/` unless ENCC_USE_PRODUCTION_DATA=true.
+ * Default: Supabase (same DB in dev and production). Set ENCC_LOCAL_DATA=true for offline dev.
  */
 export function isLocalDataStore(): boolean {
-  if (siteEnv.localData) return true;
-  if (useRemoteStore()) return false;
-  return false;
+  return siteEnv.localData;
 }
 
 export function getReviewsStorePath(): string {
