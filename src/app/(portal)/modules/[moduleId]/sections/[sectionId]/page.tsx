@@ -20,8 +20,7 @@ import {
   ValidationTable,
   WorkflowCard,
 } from "@/components/RequirementTables";
-import { EvidenceGallery } from "@/components/EvidenceGallery";
-import { ImageUpload } from "@/components/ImageUpload";
+import { EvidenceSection } from "@/components/EvidenceSection";
 import { QuestionsPanel } from "@/components/QuestionsPanel";
 
 function rvActions(enabled: boolean, topicId: string, label: string) {
@@ -281,14 +280,13 @@ export default async function SectionPage({
         id="evidence"
         actions={rvActions(rv, "evidence", "Evidence & Attachments")}
       >
-        <div className="grid gap-4 lg:grid-cols-[240px_1fr]">
-          <ImageUpload
-            moduleId={moduleId}
-            sectionId={sectionId}
-            locked={locked}
-          />
-          <EvidenceGallery items={evidence} canDelete={!locked || sessionRole === "admin"} />
-        </div>
+        <EvidenceSection
+          moduleId={moduleId}
+          sectionId={sectionId}
+          initialItems={evidence}
+          locked={locked}
+          canDelete={!locked || sessionRole === "admin"}
+        />
       </TemplateSection>
 
       {rv && (

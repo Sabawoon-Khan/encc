@@ -1,14 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { ImagePlus, Loader2, Lock, Upload, X } from "lucide-react";
+import type { EvidenceItem } from "@/types/requirements";
+import { EVIDENCE_BUCKET, IS_LOCAL_DATA } from "@/lib/clientEnv";
+import { getBrowserSupabase } from "@/lib/supabaseBrowser";
 
 interface ImageUploadProps {
   moduleId: string;
   sectionId: string;
   locked?: boolean;
-  onUploaded?: () => void;
+  onUploaded?: (item: EvidenceItem) => void;
 }
 
 export function ImageUpload({
@@ -17,7 +19,6 @@ export function ImageUpload({
   locked = false,
   onUploaded,
 }: ImageUploadProps) {
-  const router = useRouter();
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [title, setTitle] = useState("");
@@ -27,7 +28,9 @@ export function ImageUpload({
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = useCallback((f: File) => {
-    if (!f.type.startsWith("image/") && f.type !== "application/pdf") {
+    const isImage = f.type.startsWith("image/") || /\.(jpe?g|png|gif|webp|heic)$/i.test(f.name);
+    const isPdf = f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
+    if (!isImage && !isPdf) {
       setError("Only images and PDF files are allowed");
       return;
     }
@@ -59,24 +62,60 @@ export function ImageUpload({
     setUploading(true);
     setError(null);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      form.append("moduleId", moduleId);
-      form.append("sectionId", sectionId);
-      form.append("title", title.trim());
-      form.append("description", description.trim());
+      let item: EvidenceItem;
 
-      const res = await fetch("/api/uploads", { method: "POST", body: form });
-      if (!res.ok) {
+      if (IS_LOCAL_DATA) {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("moduleId", moduleId);
+        form.append("sectionId", sectionId);
+        form.append("title", title.trim());
+        form.append("description", description.trim());
+
+        const res = await fetch("/api/uploads", { method: "POST", body: form });
         const data = await res.json();
-        throw new Error(data.error || "Upload failed");
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        item = data.item as EvidenceItem;
+      } else {
+        const ext = file.name.includes(".")
+          ? file.name.slice(file.name.lastIndexOf("."))
+          : ".bin";
+        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+        const storagePath = `${moduleId}/${sectionId}/${safeName}`;
+
+        const supabase = getBrowserSupabase();
+        const { error: uploadError } = await supabase.storage
+          .from(EVIDENCE_BUCKET)
+          .upload(storagePath, file, {
+            contentType: file.type || "application/octet-stream",
+            upsert: false,
+          });
+        if (uploadError) throw new Error(uploadError.message);
+
+        const res = await fetch("/api/uploads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            moduleId,
+            sectionId,
+            title: title.trim(),
+            description: description.trim() || undefined,
+            filename: storagePath,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          await supabase.storage.from(EVIDENCE_BUCKET).remove([storagePath]);
+          throw new Error(data.error || "Upload failed");
+        }
+        item = data.item as EvidenceItem;
       }
+
       setFile(null);
       setPreview(null);
       setTitle("");
       setDescription("");
-      router.refresh();
-      onUploaded?.();
+      onUploaded?.(item);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

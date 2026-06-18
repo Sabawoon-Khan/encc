@@ -11,6 +11,7 @@ import {
   updateTopicScore,
 } from "@/lib/reviews";
 import { getModule, getSection } from "@/content/modules";
+import { errorMessage } from "@/lib/errors";
 import { MODULE_QUESTIONS_SECTION_ID } from "@/types/reviews";
 
 function isValidReviewTarget(moduleId: string, sectionId: string) {
@@ -142,8 +143,9 @@ export async function POST(
         return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     }
   } catch (err) {
+    console.error("Review action failed:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Action failed" },
+      { error: errorMessage(err) },
       { status: 400 }
     );
   }

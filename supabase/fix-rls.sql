@@ -1,28 +1,11 @@
--- ENCC Requirements Hub — run once in Supabase SQL Editor (Dashboard → SQL → New query)
+/**
+ * Run this in Supabase SQL Editor if actions fail with RLS / "Action failed".
+ * (Also included at the bottom of schema.sql for new setups.)
+ */
 
-create table if not exists section_reviews (
-  module_id text not null,
-  section_id text not null,
-  data jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now(),
-  primary key (module_id, section_id)
-);
-
-create table if not exists evidence_items (
-  id text primary key,
-  module_id text not null,
-  section_id text not null,
-  title text not null,
-  description text,
-  filename text not null,
-  uploaded_at timestamptz not null default now()
-);
-
-create index if not exists evidence_items_module_section_idx
-  on evidence_items (module_id, section_id);
-
--- RLS: allow API routes using the publishable (anon) key
+-- Allow the publishable (anon) key to read/write review data
 alter table section_reviews enable row level security;
+
 drop policy if exists "section_reviews anon all" on section_reviews;
 create policy "section_reviews anon all"
   on section_reviews for all
@@ -31,6 +14,7 @@ create policy "section_reviews anon all"
   with check (true);
 
 alter table evidence_items enable row level security;
+
 drop policy if exists "evidence_items anon all" on evidence_items;
 create policy "evidence_items anon all"
   on evidence_items for all
@@ -38,7 +22,7 @@ create policy "evidence_items anon all"
   using (true)
   with check (true);
 
--- Storage bucket for uploaded evidence files (public read)
+-- Storage bucket policies (required for direct browser uploads)
 insert into storage.buckets (id, name, public)
 values ('evidence', 'evidence', true)
 on conflict (id) do update set public = true;

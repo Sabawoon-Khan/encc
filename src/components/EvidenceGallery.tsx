@@ -10,9 +10,11 @@ import { uploadPublicUrl } from "@/lib/clientEnv";
 export function EvidenceGallery({
   items,
   canDelete = true,
+  onDeleted,
 }: {
   items: EvidenceItem[];
   canDelete?: boolean;
+  onDeleted?: (id: string) => void;
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export function EvidenceGallery({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Delete failed");
+      onDeleted?.(id);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");

@@ -56,6 +56,8 @@ Supabase URL, API key, and portal passwords are **built into** `src/lib/env.ts` 
 
 Run `supabase/schema.sql` once in **Supabase → SQL Editor** to create tables and the `evidence` storage bucket.
 
+If actions fail online with a row-level security error, also run `supabase/fix-rls.sql` (or `node scripts/apply-fix-rls.mjs` from your machine).
+
 To override any value on a specific host, set the matching env var (see `.env.example`).
 
 ## Adding a new module

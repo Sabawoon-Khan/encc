@@ -18,6 +18,7 @@ import {
 } from "@/lib/runtimeData";
 import { getSupabase } from "@/lib/supabase";
 import { useRemoteStore } from "@/lib/dataStore";
+import { errorMessage } from "@/lib/errors";
 
 function storePath() {
   return getReviewsStorePath();
@@ -61,7 +62,7 @@ async function readReviewsFromFile(): Promise<ReviewsStore> {
 async function readReviewsFromSupabase(): Promise<ReviewsStore> {
   const supabase = getSupabase();
   const { data, error } = await supabase.from("section_reviews").select("data");
-  if (error) throw error;
+  if (error) throw new Error(errorMessage(error));
 
   const sections: ReviewsStore["sections"] = {};
   for (const row of data ?? []) {
@@ -100,7 +101,7 @@ async function writeReviewToSupabase(review: SectionReview) {
     },
     { onConflict: "module_id,section_id" }
   );
-  if (error) throw error;
+  if (error) throw new Error(errorMessage(error));
 }
 
 async function writeStore(store: ReviewsStore) {
@@ -132,11 +133,38 @@ function emptyReview(moduleId: string, sectionId: string): SectionReview {
   };
 }
 
+async function getSectionReviewFromSupabase(
+  moduleId: string,
+  sectionId: string
+): Promise<SectionReview | null> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("section_reviews")
+    .select("data")
+    .eq("module_id", moduleId)
+    .eq("section_id", sectionId)
+    .maybeSingle();
+  if (error) throw new Error(errorMessage(error));
+  if (!data) return null;
+  const review = data.data as SectionReview;
+  return {
+    ...review,
+    topicScores: review.topicScores ?? {},
+    signOffPersonnel: review.signOffPersonnel ?? [],
+    feedback: review.feedback ?? [],
+    auditLog: review.auditLog ?? [],
+  };
+}
+
 export async function getSectionReview(
   moduleId: string,
   sectionId: string
 ): Promise<SectionReview> {
-  const store = await readReviewsStore();
+  if (useRemoteStore()) {
+    const review = await getSectionReviewFromSupabase(moduleId, sectionId);
+    return review ?? emptyReview(moduleId, sectionId);
+  }
+  const store = await readReviewsFromFile();
   const key = reviewKey(moduleId, sectionId);
   const review = store.sections[key] ?? emptyReview(moduleId, sectionId);
   return { ...review, topicScores: review.topicScores ?? {} };
