@@ -1,10 +1,11 @@
 import type { SessionRole } from "@/types/reviews";
+import { siteEnv } from "@/lib/env";
 
 export const COOKIE_NAME = "encc_session";
 export const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 function getSecret() {
-  return process.env.ENCC_SESSION_SECRET || "dev-secret-change-me";
+  return siteEnv.sessionSecret;
 }
 
 function toBase64Url(bytes: Uint8Array): string {
@@ -86,9 +87,7 @@ export async function verifySessionToken(
 }
 
 export function checkPassword(password: string): SessionRole | null {
-  const client = process.env.ENCC_CLIENT_PASSWORD || "encc-review-2026";
-  const admin = process.env.ENCC_ADMIN_PASSWORD || "yaqeen-admin-2026";
-  if (password === admin) return "admin";
-  if (password === client) return "client";
+  if (password === siteEnv.adminPassword) return "admin";
+  if (password === siteEnv.clientPassword) return "client";
   return null;
 }

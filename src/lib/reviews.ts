@@ -16,12 +16,14 @@ import {
   ensureLocalDataDir,
   getReviewsStorePath,
 } from "@/lib/runtimeData";
+import { getSupabase } from "@/lib/supabase";
+import { useRemoteStore } from "@/lib/dataStore";
 
 function storePath() {
   return getReviewsStorePath();
 }
 
-export async function readReviewsStore(): Promise<ReviewsStore> {
+async function readReviewsFromFile(): Promise<ReviewsStore> {
   try {
     const raw = await readFile(storePath(), "utf-8");
     const data = JSON.parse(raw) as ReviewsStore & {
@@ -56,9 +58,59 @@ export async function readReviewsStore(): Promise<ReviewsStore> {
   }
 }
 
-async function writeStore(store: ReviewsStore) {
+async function readReviewsFromSupabase(): Promise<ReviewsStore> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("section_reviews").select("data");
+  if (error) throw error;
+
+  const sections: ReviewsStore["sections"] = {};
+  for (const row of data ?? []) {
+    const review = row.data as SectionReview;
+    sections[reviewKey(review.moduleId, review.sectionId)] = {
+      ...review,
+      topicScores: review.topicScores ?? {},
+      signOffPersonnel: review.signOffPersonnel ?? [],
+      feedback: review.feedback ?? [],
+      auditLog: review.auditLog ?? [],
+    };
+  }
+  return { sections };
+}
+
+export async function readReviewsStore(): Promise<ReviewsStore> {
+  if (useRemoteStore()) {
+    return readReviewsFromSupabase();
+  }
+  return readReviewsFromFile();
+}
+
+async function writeStoreToFile(store: ReviewsStore) {
   await ensureLocalDataDir();
   await writeFile(storePath(), JSON.stringify(store, null, 2), "utf-8");
+}
+
+async function writeReviewToSupabase(review: SectionReview) {
+  const supabase = getSupabase();
+  const { error } = await supabase.from("section_reviews").upsert(
+    {
+      module_id: review.moduleId,
+      section_id: review.sectionId,
+      data: review,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "module_id,section_id" }
+  );
+  if (error) throw error;
+}
+
+async function writeStore(store: ReviewsStore) {
+  if (useRemoteStore()) {
+    await Promise.all(
+      Object.values(store.sections).map((review) => writeReviewToSupabase(review))
+    );
+    return;
+  }
+  await writeStoreToFile(store);
 }
 
 function emptyReview(moduleId: string, sectionId: string): SectionReview {
@@ -122,6 +174,10 @@ function appendAudit(
 }
 
 async function save(review: SectionReview) {
+  if (useRemoteStore()) {
+    await writeReviewToSupabase(review);
+    return;
+  }
   const store = await readReviewsStore();
   store.sections[reviewKey(review.moduleId, review.sectionId)] = review;
   await writeStore(store);

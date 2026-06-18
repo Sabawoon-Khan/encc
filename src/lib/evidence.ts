@@ -6,6 +6,8 @@ import {
   getEvidenceManifestPath,
   getUploadsDir,
 } from "@/lib/runtimeData";
+import { EVIDENCE_BUCKET, getSupabase } from "@/lib/supabase";
+import { useRemoteStore } from "@/lib/dataStore";
 
 function manifestPath() {
   return getEvidenceManifestPath();
@@ -15,7 +17,7 @@ function uploadsDir() {
   return getUploadsDir();
 }
 
-export async function readManifest(): Promise<EvidenceManifest> {
+async function readManifestFromFile(): Promise<EvidenceManifest> {
   try {
     const raw = await readFile(manifestPath(), "utf-8");
     return JSON.parse(raw) as EvidenceManifest;
@@ -24,12 +26,37 @@ export async function readManifest(): Promise<EvidenceManifest> {
   }
 }
 
-export async function writeManifest(manifest: EvidenceManifest): Promise<void> {
+async function readManifestFromSupabase(): Promise<EvidenceManifest> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("evidence_items")
+    .select("*")
+    .order("uploaded_at", { ascending: false });
+  if (error) throw error;
+
+  const items: EvidenceItem[] = (data ?? []).map((row) => ({
+    id: row.id,
+    moduleId: row.module_id,
+    sectionId: row.section_id,
+    title: row.title,
+    description: row.description ?? undefined,
+    filename: row.filename,
+    uploadedAt: row.uploaded_at,
+  }));
+  return { items };
+}
+
+export async function readManifest(): Promise<EvidenceManifest> {
+  if (useRemoteStore()) return readManifestFromSupabase();
+  return readManifestFromFile();
+}
+
+async function writeManifestToFile(manifest: EvidenceManifest): Promise<void> {
   await ensureLocalDataDir();
   await writeFile(manifestPath(), JSON.stringify(manifest, null, 2), "utf-8");
 }
 
-export async function saveEvidence(
+async function saveEvidenceToFile(
   file: File,
   meta: Omit<EvidenceItem, "id" | "filename" | "uploadedAt">
 ): Promise<EvidenceItem> {
@@ -50,11 +77,58 @@ export async function saveEvidence(
     uploadedAt: new Date().toISOString(),
   };
 
-  const manifest = await readManifest();
+  const manifest = await readManifestFromFile();
   manifest.items.push(item);
-  await writeManifest(manifest);
+  await writeManifestToFile(manifest);
 
   return item;
+}
+
+async function saveEvidenceToSupabase(
+  file: File,
+  meta: Omit<EvidenceItem, "id" | "filename" | "uploadedAt">
+): Promise<EvidenceItem> {
+  const supabase = getSupabase();
+  const ext = path.extname(file.name) || ".bin";
+  const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+  const storagePath = `${meta.moduleId}/${meta.sectionId}/${safeName}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  const { error: uploadError } = await supabase.storage
+    .from(EVIDENCE_BUCKET)
+    .upload(storagePath, buffer, {
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+    });
+  if (uploadError) throw uploadError;
+
+  const item: EvidenceItem = {
+    ...meta,
+    id: `ev-${Date.now()}`,
+    filename: storagePath,
+    uploadedAt: new Date().toISOString(),
+  };
+
+  const { error: insertError } = await supabase.from("evidence_items").insert({
+    id: item.id,
+    module_id: item.moduleId,
+    section_id: item.sectionId,
+    title: item.title,
+    description: item.description ?? null,
+    filename: item.filename,
+    uploaded_at: item.uploadedAt,
+  });
+  if (insertError) throw insertError;
+
+  return item;
+}
+
+export async function saveEvidence(
+  file: File,
+  meta: Omit<EvidenceItem, "id" | "filename" | "uploadedAt">
+): Promise<EvidenceItem> {
+  if (useRemoteStore()) return saveEvidenceToSupabase(file, meta);
+  return saveEvidenceToFile(file, meta);
 }
 
 export async function getEvidenceForSection(
@@ -67,8 +141,8 @@ export async function getEvidenceForSection(
   );
 }
 
-export async function deleteEvidence(id: string): Promise<boolean> {
-  const manifest = await readManifest();
+async function deleteEvidenceFromFile(id: string): Promise<boolean> {
+  const manifest = await readManifestFromFile();
   const idx = manifest.items.findIndex((i) => i.id === id);
   if (idx === -1) return false;
   const item = manifest.items[idx];
@@ -78,6 +152,30 @@ export async function deleteEvidence(id: string): Promise<boolean> {
     /* file may already be gone */
   }
   manifest.items.splice(idx, 1);
-  await writeManifest(manifest);
+  await writeManifestToFile(manifest);
   return true;
+}
+
+async function deleteEvidenceFromSupabase(id: string): Promise<boolean> {
+  const supabase = getSupabase();
+  const { data, error: fetchError } = await supabase
+    .from("evidence_items")
+    .select("filename")
+    .eq("id", id)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!data) return false;
+
+  await supabase.storage.from(EVIDENCE_BUCKET).remove([data.filename]);
+  const { error: deleteError } = await supabase
+    .from("evidence_items")
+    .delete()
+    .eq("id", id);
+  if (deleteError) throw deleteError;
+  return true;
+}
+
+export async function deleteEvidence(id: string): Promise<boolean> {
+  if (useRemoteStore()) return deleteEvidenceFromSupabase(id);
+  return deleteEvidenceFromFile(id);
 }

@@ -49,6 +49,43 @@
           "timestamp": "2026-06-09T15:54:30.061Z"
         }
       ]
+    },
+    "opr/execution-office": {
+      "moduleId": "opr",
+      "sectionId": "execution-office",
+      "locked": false,
+      "approvalStatus": "in_review",
+      "paymentMilestone": "pending",
+      "scores": {
+        "completeness": null,
+        "accuracy": null,
+        "signOffReadiness": null
+      },
+      "feedback": [
+        {
+          "author": "sabawoon",
+          "role": "client",
+          "message": "done",
+          "topicId": "objectives",
+          "id": "fb-1781808143982-tiseb",
+          "moduleId": "opr",
+          "sectionId": "execution-office",
+          "status": "open",
+          "createdAt": "2026-06-18T18:42:23.982Z"
+        }
+      ],
+      "topicScores": {},
+      "signOffPersonnel": [],
+      "auditLog": [
+        {
+          "action": "feedback_added",
+          "actor": "sabawoon",
+          "role": "client",
+          "detail": "done",
+          "id": "audit-1781808143982",
+          "timestamp": "2026-06-18T18:42:23.982Z"
+        }
+      ]
     }
   }
 }

@@ -46,10 +46,17 @@ Pages: **Review & Approvals** (`/approvals`) · **§25 on each module page**
 
 ```
 src/content/modules/     # Requirement definitions (TypeScript)
-content/reviews.json     # Scores, approvals, locks, feedback (auto-updated)
-content/evidence-manifest.json
-.env.local               # Passwords (never commit)
+supabase/schema.sql      # Database tables + storage bucket (run once in Supabase)
+.env.local               # Passwords + Supabase keys (never commit)
 ```
+
+### Hosted deployment (Vercel / serverless)
+
+Supabase URL, API key, and portal passwords are **built into** `src/lib/env.ts` — no Vercel env vars required.
+
+Run `supabase/schema.sql` once in **Supabase → SQL Editor** to create tables and the `evidence` storage bucket.
+
+To override any value on a specific host, set the matching env var (see `.env.example`).
 
 ## Adding a new module
 

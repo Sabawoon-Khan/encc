@@ -2,6 +2,7 @@ import type { ModuleDefinition } from "@/types/requirements";
 import { HIJRI_DATE_EXAMPLE, HIJRI_DATE_FORMAT } from "@/types/requirements";
 import { archiveSection } from "./archive";
 import { executionOfficeSection } from "./execution-office";
+import { generalTablesSection } from "./general-tables";
 
 export const oprModule: ModuleDefinition = {
   id: "opr",
@@ -17,11 +18,11 @@ export const oprModule: ModuleDefinition = {
   purpose:
     "General management and executive control layer of the ENCC ERP — approvals, document circulation, and HQ coordination.",
   overview:
-    "ریایست اجرایه (Executive Directorate) is the headquarters management section controlled by general managers and executives. It contains two sub-offices: امریت اجرایه (Execution Office) and آرشیف (Archive). Four executives share equal approval authority for workflows in this module.",
+    "ریایست اجرایه (Executive Directorate) is the headquarters management section controlled by general managers and executives. It contains sub-offices: امریت اجرایه (Execution Office) and آرشیف (Archive), plus shared General Tables used across sections. Four bosses share equal approval authority for workflows in this module.",
   purposes: [
     "Centralize executive-level approvals and document routing at HQ",
     "Track internal and external correspondence through آرشیف (Archive)",
-    "Support امریت اجرایه (Execution Office) in preparing and routing documents for executive sign-off",
+    "Register customer purchase requests (coal, wood, etc.) through امریت اجرایه with full payment and sales workflow",
   ],
   generalStandards: [
     {
@@ -127,11 +128,12 @@ export const oprModule: ModuleDefinition = {
         "Registers internal inquiries (Paper 1.1) and external outgoing correspondence. Current tool: physical book register.",
     },
   ],
-  sections: [archiveSection, executionOfficeSection],
+  sections: [generalTablesSection, archiveSection, executionOfficeSection],
   relatedModules: [
     { code: "DOC", name: "Document Management", relation: "Attachments & retention" },
-    { code: "SCA", name: "Sales, Contracts & Allocations", relation: "Commercial context" },
-    { code: "FIN", name: "Finance & GL", relation: "Financial approvals" },
+    { code: "SCA", name: "Sales, Contracts & Allocations", relation: "Sales forms & commercial context" },
+    { code: "FIN", name: "Finance & GL", relation: "Bank accounts & payment verification" },
+    { code: "MINS", name: "Mines", relation: "Mining sites & completed order visibility" },
   ],
   openQuestions: [
     {
@@ -148,6 +150,26 @@ export const oprModule: ModuleDefinition = {
       id: "OQ-OPR-003",
       question: "Do external outgoing letters require executive approval before send?",
       owner: "ENCC Operations",
+    },
+    {
+      id: "OQ-OPR-004",
+      question: "Exact bank receipt PDF layout for product and weighing — sample images needed from ENCC",
+      owner: "ENCC Mali / Finance",
+    },
+    {
+      id: "OQ-OPR-005",
+      question: "Sales department form layout and fields — sample from ENCC فروشات",
+      owner: "ENCC Sales",
+    },
+    {
+      id: "OQ-OPR-006",
+      question: "Weighing fee confirmed at 10 AFN/ton — any exceptions or volume discounts?",
+      owner: "ENCC Commercial",
+    },
+    {
+      id: "OQ-OPR-007",
+      question: "Current product categories, types, and price list for migration into master tables",
+      owner: "ENCC Execution Office",
     },
   ],
 };

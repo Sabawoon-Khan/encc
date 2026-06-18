@@ -1,16 +1,17 @@
 import path from "path";
 import { mkdir } from "fs/promises";
+import { siteEnv } from "@/lib/env";
+import { useRemoteStore } from "@/lib/dataStore";
 
 /**
- * When true, reviews/uploads write to `.local-data/` and `public/uploads-local/`
- * instead of the shared `content/` + `public/uploads/` used on the hosted site.
- *
- * Enabled automatically in development unless ENCC_USE_PRODUCTION_DATA=true.
+ * When true, reviews/uploads write to `.local-data/` and `public/uploads-local/`.
+ * Set ENCC_LOCAL_DATA=true to use isolated local paths in any environment.
+ * Dev defaults to `content/` + `public/uploads/` unless ENCC_USE_PRODUCTION_DATA=true.
  */
 export function isLocalDataStore(): boolean {
-  if (process.env.ENCC_USE_PRODUCTION_DATA === "true") return false;
-  if (process.env.ENCC_LOCAL_DATA === "true") return true;
-  return process.env.NODE_ENV === "development";
+  if (siteEnv.localData) return true;
+  if (useRemoteStore()) return false;
+  return false;
 }
 
 export function getReviewsStorePath(): string {

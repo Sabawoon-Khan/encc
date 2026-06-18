@@ -14,8 +14,80 @@ export const glossary: GlossaryTerm[] = [
     term: "Execution Office",
     termDari: "امریت اجرایه",
     definition:
-      "Sub-office of ریایست اجرایه. Prepares documents and routes them to executives for approval.",
+      "Sub-office of ریایست اجرایه. Registers customer purchase requests. Workflow: create → boss approval → Mali receipts → control → payment → sales form → MINS.",
     usedIn: ["OPR"],
+  },
+  {
+    id: "general-tables",
+    term: "General Tables",
+    termDari: "جداول عمومی",
+    definition:
+      "Module-wide master data shared across sections: customers, product categories/types, mining sites, bank accounts, weighing rates, and uploaded bank receipts.",
+    usedIn: ["OPR"],
+  },
+  {
+    id: "purchase-request",
+    term: "Purchase Request",
+    termDari: "درخواست خرید",
+    definition:
+      "Customer order for product from an ENCC mine. Tracks customer, category, type, mine, quantity, price, and full approval/payment trail.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "product-category",
+    term: "Product Category",
+    termDari: "جنس",
+    definition:
+      "Dynamic master table for general product groups — e.g. coal, wood, charcoal. Each category has one or more product types.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "product-type",
+    term: "Product Type",
+    termDari: "نوع",
+    definition:
+      "Specific variant under a product category. Carries a default unit price copied to purchase requests.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "marley",
+    term: "Mali (مالی)",
+    termDari: "مالی",
+    definition:
+      "Finance department that generates bank payment receipts and verifies uploaded bank receipts after customer payment. Two receipts per purchase: product and weighing.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "control-section",
+    term: "Control",
+    termDari: "کنترول",
+    definition:
+      "Verification step after Mali prints receipts and before customer pays at bank. Control officer confirms details and records who checked and when.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "tarafa",
+    term: "Tarafa Number",
+    termDari: "شماره تعرفه",
+    definition:
+      "Reference number from the bank receipt given to the customer after payment. Captured when uploading the receipt scan.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "wagon-receipt",
+    term: "Weighing Receipt (ویگن)",
+    termDari: "رسید ویگن",
+    definition:
+      "Second bank receipt for weighing fees — calculated per ton (default 10 AFN/ton). Uses a separate bank account from the product receipt.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "uploaded-bank-receipt",
+    term: "Uploaded Bank Receipt",
+    termDari: "رسید بانک آپلود شده",
+    definition:
+      "Shared record for bank receipt scans: number, date, Tarafa number, file, type (purchase, weighing, rent, etc.), and approver. Used across Execution Office, rent, and other sections.",
+    usedIn: ["OPR", "General Tables"],
   },
   {
     id: "archive",
