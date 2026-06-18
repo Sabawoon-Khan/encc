@@ -8,7 +8,22 @@ import {
 } from "@/lib/runtimeData";
 import { EVIDENCE_BUCKET, getSupabase } from "@/lib/supabase";
 import { useRemoteStore } from "@/lib/dataStore";
+import { isHostedDeployment } from "@/lib/env";
 import { errorMessage } from "@/lib/errors";
+import { reviewKey } from "@/types/reviews";
+
+/** Old evidence keys before archive became its own module */
+const LEGACY_EVIDENCE_SOURCES: Record<string, { moduleId: string; sectionId: string }[]> = {
+  [reviewKey("archive", "archive")]: [{ moduleId: "opr", sectionId: "archive" }],
+};
+
+function dedupeEvidence(items: EvidenceItem[]): EvidenceItem[] {
+  const byId = new Map<string, EvidenceItem>();
+  for (const item of items) byId.set(item.id, item);
+  return [...byId.values()].sort(
+    (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+  );
+}
 
 function manifestPath() {
   return getEvidenceManifestPath();
@@ -151,14 +166,41 @@ export async function getEvidenceForSection(
   moduleId: string,
   sectionId: string
 ): Promise<EvidenceItem[]> {
+  let items: EvidenceItem[] = [];
+
   if (useRemoteStore()) {
     const manifest = await readManifestFromSupabase({ moduleId, sectionId });
-    return manifest.items;
+    items = manifest.items;
+  } else {
+    if (isHostedDeployment()) {
+      throw new Error(
+        "Evidence storage is not configured for production. Add Supabase env vars on Vercel."
+      );
+    }
+    const manifest = await readManifestFromFile();
+    items = manifest.items.filter(
+      (i) => i.moduleId === moduleId && i.sectionId === sectionId
+    );
   }
-  const manifest = await readManifestFromFile();
-  return manifest.items.filter(
-    (i) => i.moduleId === moduleId && i.sectionId === sectionId
-  );
+
+  const legacySources = LEGACY_EVIDENCE_SOURCES[reviewKey(moduleId, sectionId)];
+  if (legacySources) {
+    for (const src of legacySources) {
+      let legacyItems: EvidenceItem[] = [];
+      if (useRemoteStore()) {
+        const leg = await readManifestFromSupabase(src);
+        legacyItems = leg.items;
+      } else {
+        const manifest = await readManifestFromFile();
+        legacyItems = manifest.items.filter(
+          (i) => i.moduleId === src.moduleId && i.sectionId === src.sectionId
+        );
+      }
+      items = [...items, ...legacyItems];
+    }
+  }
+
+  return dedupeEvidence(items);
 }
 
 export async function registerEvidence(

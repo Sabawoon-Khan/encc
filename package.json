@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed:reviews": "node scripts/seed-reviews.mjs",
-    "merge:reviews": "node scripts/merge-legacy-reviews.mjs"
+    "merge:reviews": "node scripts/merge-legacy-reviews.mjs",
+    "merge:evidence": "node scripts/merge-legacy-evidence.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
