@@ -3,7 +3,6 @@ import type { SectionDefinition } from "@/types/requirements";
 export const generalTablesSection: SectionDefinition = {
   id: "general-tables",
   name: "General Tables",
-  nameDari: "جداول عمومی",
   enableReview: true,
   description:
     "Module-wide reference data shared across OPR sections and other ENCC modules. Maintained centrally — Execution Office, rent management, and future sections reference these tables rather than duplicating definitions.",
@@ -534,11 +533,11 @@ export const generalTablesSection: SectionDefinition = {
       severity: "Critical",
     },
     {
-      id: "BR-OPR-G006",
-      rule: "Bank receipt approval (approved_by, approved_at) recorded separately from parent transaction approval",
-      trigger: "Verify receipt",
-      response: "Require approver and timestamp on receipt record",
-      severity: "High",
+      id: "BR-OPR-G007",
+      rule: "Only Operations department can create customers via + button — Sales and other departments read-only",
+      trigger: "Create customer from form",
+      response: "Block non-Operations roles",
+      severity: "Critical",
     },
   ],
   validationRules: [
@@ -582,9 +581,9 @@ export const generalTablesSection: SectionDefinition = {
     },
   ],
   crossModuleNotes: [
-    "Execution Office references: Customer, Product Category, Product Type, Mining Site, Bank Account, Weighing Rate, Bank Receipt Type, Uploaded Bank Receipt.",
+    "Execution Office departments: Operations (create customers), Mali (receipts), Control (verify), Sales (forms + reports).",
     "Rent and property sections (future) will reuse Bank Account, Bank Receipt Type, and Uploaded Bank Receipt without duplicating tables.",
-    "Customer + button pattern: searchable dropdown on any form that needs customer_id — modal saves to this section.",
+    "Customer + button: Operations only — see operations section BR-OPR-030.",
   ],
   nfrs: [
     {

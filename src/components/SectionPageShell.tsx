@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
-import type { ModuleDefinition, SectionDefinition } from "@/types/requirements";
+import type { ModuleDefinition, SectionDefinition, TaskRef } from "@/types/requirements";
 import type { SectionReview } from "@/types/reviews";
+import { resolveTaskFlow, resolveTaskRef } from "@/content/modules";
 import { StatusBadge } from "@/components/StatusBadge";
 import { SectionReviewBar } from "@/components/SectionReviewBar";
 import { SectionReviewProvider } from "@/components/SectionReviewContext";
@@ -12,6 +13,77 @@ import {
   sectionTocFlagsFromSection,
 } from "@/lib/sectionToc";
 import { CurrentToolBadge } from "@/components/TemplateSection";
+
+function TaskRefLinks({
+  refs,
+  layout = "list",
+}: {
+  refs: TaskRef[];
+  layout?: "inline" | "list";
+}) {
+  if (layout === "list") {
+    return (
+      <ol className="mt-1.5 list-none space-y-1 pl-0">
+        {refs.map((ref) => {
+          const { href, label } = resolveTaskRef(ref);
+          return (
+            <li key={`${ref.moduleId}-${ref.sectionId}`}>
+              <Link href={href} className="font-medium text-sky-600 hover:underline">
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    );
+  }
+
+  return (
+    <>
+      {refs.map((ref, i) => {
+        const { href, label } = resolveTaskRef(ref);
+        return (
+          <span key={`${ref.moduleId}-${ref.sectionId}`}>
+            {i > 0 && ", "}
+            <Link href={href} className="font-medium text-sky-600 hover:underline">
+              {label}
+            </Link>
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
+function TaskFlowLinks({
+  moduleId,
+  section,
+}: {
+  moduleId: string;
+  section: SectionDefinition;
+}) {
+  const flow = resolveTaskFlow(moduleId, section.id);
+  const hasBefore = flow.precededBy.length > 0;
+  const hasAfter = flow.followedBy.length > 0;
+  if (!hasBefore && !hasAfter) return null;
+
+  return (
+    <div className="mb-6 space-y-1.5 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+      {hasBefore && (
+        <div className="text-slate-600">
+          <span className="font-medium text-slate-500">Before</span>
+          <TaskRefLinks refs={flow.precededBy} layout="list" />
+        </div>
+      )}
+      {hasAfter && (
+        <div className="text-slate-600">
+          <span className="font-medium text-slate-500">After</span>
+          <TaskRefLinks refs={flow.followedBy} layout="list" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface SectionPageShellProps {
   mod: ModuleDefinition;
@@ -86,6 +158,8 @@ export function SectionPageShell({
           {section.description}
         </p>
       </header>
+
+      <TaskFlowLinks moduleId={mod.id} section={section} />
 
       {reviewEnabled ? (
         <SectionReviewProvider

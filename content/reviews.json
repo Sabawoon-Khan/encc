@@ -1,7 +1,7 @@
 {
   "sections": {
-    "opr/archive": {
-      "moduleId": "opr",
+    "archive/archive": {
+      "moduleId": "archive",
       "sectionId": "archive",
       "locked": false,
       "approvalStatus": "in_review",
@@ -21,7 +21,7 @@
       "feedback": [
         {
           "id": "fb-1781020470061",
-          "moduleId": "opr",
+          "moduleId": "archive",
           "sectionId": "archive",
           "author": "sabawoon",
           "role": "client",

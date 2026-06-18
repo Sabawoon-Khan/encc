@@ -1,8 +1,6 @@
 import type { ModuleDefinition } from "@/types/requirements";
 import { HIJRI_DATE_EXAMPLE, HIJRI_DATE_FORMAT } from "@/types/requirements";
-import { archiveSection } from "./archive";
 import { executionOfficeSection } from "./execution-office";
-import { generalTablesSection } from "./general-tables";
 
 export const oprModule: ModuleDefinition = {
   id: "opr",
@@ -10,19 +8,20 @@ export const oprModule: ModuleDefinition = {
   name: "Executive Directorate",
   nameDari: "ریایست اجرایه",
   tier: 1,
+  sidebarGroup: "directorate",
   status: "draft",
   location: "ENCC HQ — ریایست اجرایه",
   client: "ENCC — National Coal Corporation",
   analyst: "Yaqeen Technology",
   version: "1.0",
   purpose:
-    "General management and executive control layer of the ENCC ERP — approvals, document circulation, and HQ coordination.",
+    "HQ executive layer — standards, boss approvals, and coordination across departments.",
   overview:
-    "ریایست اجرایه (Executive Directorate) is the headquarters management section controlled by general managers and executives. It contains sub-offices: امریت اجرایه (Execution Office) and آرشیف (Archive), plus shared General Tables used across sections. Four bosses share equal approval authority for workflows in this module.",
+    "HQ executive directorate — standards, boss approvals, and coordination across اجرایه, آرشیف, and departments.",
   purposes: [
-    "Centralize executive-level approvals and document routing at HQ",
-    "Track internal and external correspondence through آرشیف (Archive)",
-    "Register customer purchase requests (coal, wood, etc.) through امریت اجرایه with full payment and sales workflow",
+    "Module-wide standards (Hijri dates, executive approval, audit trail)",
+    "End-to-end purchase workflow overview across departments",
+    "Coordinate Archive and Execution Office sub-offices",
   ],
   generalStandards: [
     {
@@ -30,7 +29,7 @@ export const oprModule: ModuleDefinition = {
       title: "Dates",
       titleDari: "تاریخ",
       description:
-        "All date fields across this module use the Solar Hijri (Shamsi) calendar. Applies to every sub-office and section — not repeated in individual field definitions.",
+        "All date fields across this module use the Solar Hijri (Shamsi) calendar. Applies to every department — not repeated in individual field definitions.",
       example: `${HIJRI_DATE_FORMAT} → ${HIJRI_DATE_EXAMPLE}`,
     },
     {
@@ -38,7 +37,7 @@ export const oprModule: ModuleDefinition = {
       title: "Executive selection",
       titleDari: "انتخاب مدیر",
       description:
-        "When a record requires approval, the creator selects one of the four executives (CEO, Commercial, Operations, Financial). All four have equal approval authority.",
+        "When a record requires approval, the creator selects one of the four bosses (Commercial, Mali, Operational, General). All four have equal approval authority.",
     },
     {
       id: "audit-trail",
@@ -65,17 +64,17 @@ export const oprModule: ModuleDefinition = {
     },
   ],
   problemStatement:
-    "ENCC HQ manages inquiries and correspondence through Paper 1.1 and physical book registers. There is no digital trail for executive approval → department routing → optional result.",
+    "ENCC HQ manages inquiries and correspondence through paper forms and physical registers. Departments work in silos with no shared digital trail.",
   successOutcomes: [
     {
       id: "OUT-OPR-001",
-      outcome: "Every archive item registered with unique ENCC number",
-      measure: "Archive register review",
+      outcome: "Every transaction registered with unique ENCC number",
+      measure: "Department register review",
       target: "100%",
     },
     {
       id: "OUT-OPR-002",
-      outcome: "Executive approval before department routing",
+      outcome: "Executive approval before downstream routing",
       measure: "Workflow audit",
       target: "100%",
     },
@@ -117,59 +116,30 @@ export const oprModule: ModuleDefinition = {
       id: "execution-office",
       name: "Execution Office",
       nameDari: "امریت اجرایه",
-      description:
-        "Prepares documents and routes them to executives for approval. Tracks status through the approval chain.",
+      description: "Purchase workflow — Operations → Mali → Control → Sales",
     },
     {
       id: "archive",
       name: "Archive",
       nameDari: "آرشیف",
-      description:
-        "Registers internal inquiries (Paper 1.1) and external outgoing correspondence. Current tool: physical book register.",
+      description: "Internal inquiries and external correspondence — see Archive module",
     },
   ],
-  sections: [generalTablesSection, archiveSection, executionOfficeSection],
+  sections: [executionOfficeSection],
   relatedModules: [
-    { code: "DOC", name: "Document Management", relation: "Attachments & retention" },
-    { code: "SCA", name: "Sales, Contracts & Allocations", relation: "Sales forms & commercial context" },
-    { code: "FIN", name: "Finance & GL", relation: "Bank accounts & payment verification" },
-    { code: "MINS", name: "Mines", relation: "Mining sites & completed order visibility" },
+    { code: "GEN", name: "General Tables", relation: "Shared master data" },
+    { code: "OPS", name: "Operations", relation: "Purchase request creation" },
+    { code: "MALI", name: "Mali", relation: "Bank receipts & payments" },
+    { code: "CTRL", name: "Control", relation: "Verification checkpoint" },
+    { code: "SAL", name: "Sales", relation: "Sales forms & reports" },
+    { code: "ARC", name: "Archive", relation: "Correspondence register" },
+    { code: "MINS", name: "Mines", relation: "Mine site integration" },
   ],
   openQuestions: [
-    {
-      id: "OQ-OPR-001",
-      question: "Exact internal inquiry number format used in physical book today?",
-      owner: "ENCC Archive",
-    },
-    {
-      id: "OQ-OPR-002",
-      question: "Is there a separate incoming external archive (letters arriving from outside)?",
-      owner: "ENCC Archive",
-    },
-    {
-      id: "OQ-OPR-003",
-      question: "Do external outgoing letters require executive approval before send?",
-      owner: "ENCC Operations",
-    },
-    {
-      id: "OQ-OPR-004",
-      question: "Exact bank receipt PDF layout for product and weighing — sample images needed from ENCC",
-      owner: "ENCC Mali / Finance",
-    },
-    {
-      id: "OQ-OPR-005",
-      question: "Sales department form layout and fields — sample from ENCC فروشات",
-      owner: "ENCC Sales",
-    },
     {
       id: "OQ-OPR-006",
       question: "Weighing fee confirmed at 10 AFN/ton — any exceptions or volume discounts?",
       owner: "ENCC Commercial",
-    },
-    {
-      id: "OQ-OPR-007",
-      question: "Current product categories, types, and price list for migration into master tables",
-      owner: "ENCC Execution Office",
     },
   ],
 };

@@ -1,0 +1,85 @@
+import type { SectionDefinition } from "@/types/requirements";
+
+export const salariesSection: SectionDefinition = {
+  id: "salaries",
+  name: "Salaries",
+  nameDari: "معاشات",
+  enableReview: true,
+  description:
+    "Salaries department (معاشات) — employee payroll processing, salary registers, and payment records. Detailed workflows to be expanded with ENCC.",
+  status: "draft",
+  summary: [
+    "Monthly salary calculation and payroll register",
+    "Employee salary payment records",
+    "Deductions, allowances, and salary reports",
+  ],
+  entities: [
+    {
+      id: "ENT-SAL-010",
+      name: "Salary Payment Record",
+      description: "Monthly salary payment for an employee.",
+      fields: [
+        {
+          name: "payment_number",
+          label: "Payment Number",
+          labelDari: "شماره پرداخت",
+          meaning: "Auto-generated",
+          type: "text",
+          required: true,
+          example: "SAL-0120/1405",
+        },
+        {
+          name: "employee_id",
+          label: "Employee",
+          labelDari: "کارمند",
+          meaning: "Reference to employee master",
+          type: "reference",
+          required: true,
+          example: "EMP-0045",
+        },
+        {
+          name: "period",
+          label: "Salary Period",
+          labelDari: "دوره معاش",
+          meaning: "Month/year in Hijri",
+          type: "text",
+          required: true,
+          example: "1405/02",
+        },
+        {
+          name: "gross_amount",
+          label: "Gross Amount",
+          labelDari: "معاش ناخالص",
+          meaning: "Total before deductions",
+          type: "decimal",
+          required: true,
+          example: "45000",
+        },
+        {
+          name: "net_amount",
+          label: "Net Amount",
+          labelDari: "معاش خالص",
+          meaning: "Amount paid after deductions",
+          type: "decimal",
+          required: true,
+          example: "42000",
+        },
+        {
+          name: "status",
+          label: "Status",
+          labelDari: "وضعیت",
+          meaning: "draft | approved | paid",
+          type: "enum",
+          required: true,
+          example: "paid",
+        },
+      ],
+    },
+  ],
+  workflows: [],
+  businessRules: [],
+  deliverableChecklist: [
+    { item: "Salaries department placeholder documented", done: true },
+    { item: "Detailed payroll workflow with ENCC", done: false },
+  ],
+};

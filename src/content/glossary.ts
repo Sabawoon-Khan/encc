@@ -14,8 +14,40 @@ export const glossary: GlossaryTerm[] = [
     term: "Execution Office",
     termDari: "امریت اجرایه",
     definition:
-      "Sub-office of ریایست اجرایه. Registers customer purchase requests. Workflow: create → boss approval → Mali receipts → control → payment → sales form → MINS.",
+      "Sub-office hub for purchase workflow — four departments: Operations, Mali, Control, Sales. See individual department sections for details.",
     usedIn: ["OPR"],
+  },
+  {
+    id: "operations-dept",
+    term: "Operations",
+    termDari: "عملیات",
+    definition:
+      "First department — creates purchase request, adds customers (+ button), boss approval. Customer history reports.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "mali-dept",
+    term: "Mali (Finance)",
+    termDari: "مالی",
+    definition:
+      "Finance department — generates bank receipts, uploads and verifies payments after customer pays at bank.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "control-dept",
+    term: "Control",
+    termDari: "کنترول",
+    definition:
+      "Verification department — checks requests and Mali receipts before bank payment. Central hub for future control workflows.",
+    usedIn: ["OPR", "Execution Office"],
+  },
+  {
+    id: "sales-dept",
+    term: "Sales",
+    termDari: "فروشات",
+    definition:
+      "Final department — issues sales form sent to MINS. Four analytics reports. Cannot create customers.",
+    usedIn: ["OPR", "Execution Office"],
   },
   {
     id: "general-tables",

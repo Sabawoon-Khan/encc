@@ -135,6 +135,13 @@ export interface EntityDefinition {
   fields: RequirementField[];
 }
 
+export interface TaskRef {
+  moduleId: string;
+  sectionId: string;
+  /** Display label override */
+  label?: string;
+}
+
 export interface SectionDefinition {
   id: string;
   name: string;
@@ -158,6 +165,10 @@ export interface SectionDefinition {
   crossModuleNotes?: string[];
   deliverableChecklist?: DeliverableItem[];
   relatedSections?: string[];
+  /** Tasks that must complete before this one */
+  precededBy?: TaskRef[];
+  /** Tasks that typically follow this one */
+  followedBy?: TaskRef[];
   /** Show client review & scoring on this section page */
   enableReview?: boolean;
 }
@@ -184,6 +195,9 @@ export interface GeneralStandard {
   example?: string;
 }
 
+/** Sidebar grouping — shared data, directorate overview, or task-owning department */
+export type SidebarGroup = "shared" | "directorate" | "department";
+
 export interface ModuleDefinition {
   id: string;
   code: string;
@@ -198,6 +212,10 @@ export interface ModuleDefinition {
   purpose: string;
   overview: string;
   purposes: string[];
+  /** Controls sidebar placement */
+  sidebarGroup?: SidebarGroup;
+  /** Parent module when this is a department under a directorate */
+  parentModuleId?: string;
   generalStandards?: GeneralStandard[];
   globalBusinessRules?: BusinessRule[];
   executives: ExecutiveRole[];

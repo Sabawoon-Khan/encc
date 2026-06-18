@@ -1,0 +1,86 @@
+import type { SectionDefinition } from "@/types/requirements";
+
+export const hrSection: SectionDefinition = {
+  id: "hr",
+  name: "Human Resources",
+  nameDari: "منابع بشری",
+  enableReview: true,
+  description:
+    "HR department (منابع بشری) — employee records, hiring, leave, and personnel management. Detailed workflows to be expanded with ENCC.",
+  status: "draft",
+  summary: [
+    "Employee master records and personnel files",
+    "Hiring, transfers, and termination records",
+    "Leave requests and HR reports",
+  ],
+  entities: [
+    {
+      id: "ENT-HR-010",
+      name: "Employee Record",
+      description: "Core HR employee master record.",
+      fields: [
+        {
+          name: "employee_code",
+          label: "Employee Code",
+          labelDari: "کود کارمند",
+          meaning: "Unique employee identifier",
+          type: "text",
+          required: true,
+          example: "EMP-0045",
+        },
+        {
+          name: "full_name",
+          label: "Full Name",
+          labelDari: "نام کامل",
+          meaning: "Employee legal name",
+          type: "text",
+          required: true,
+          example: "Mohammad Rahimi",
+        },
+        {
+          name: "department_id",
+          label: "Department",
+          labelDari: "ریاست",
+          meaning: "Current department assignment",
+          type: "reference",
+          required: true,
+          example: "Operations",
+        },
+        {
+          name: "position",
+          label: "Position",
+          labelDari: "بست",
+          meaning: "Job title / position",
+          type: "text",
+          required: true,
+          example: "Clerk",
+        },
+        {
+          name: "hire_date",
+          label: "Hire Date",
+          labelDari: "تاریخ استخدام",
+          meaning: "Hijri start date",
+          type: "hijri_date",
+          required: true,
+          example: "1400/05/01",
+        },
+        {
+          name: "status",
+          label: "Status",
+          labelDari: "وضعیت",
+          meaning: "active | on_leave | terminated",
+          type: "enum",
+          required: true,
+          example: "active",
+        },
+      ],
+    },
+  ],
+  workflows: [],
+  businessRules: [],
+  followedBy: [{ moduleId: "salaries", sectionId: "salaries", label: "Salaries" }],
+  deliverableChecklist: [
+    { item: "HR department placeholder documented", done: true },
+    { item: "Detailed HR workflows with ENCC", done: false },
+  ],
+};
