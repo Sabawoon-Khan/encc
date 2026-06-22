@@ -78,7 +78,10 @@ export const balanceSection: SectionDefinition = {
   ],
   workflows: [],
   businessRules: [],
-  relatedSections: ["mali"],
+  relatedSections: ["mali", "sanda-mali"],
+  precededBy: [
+    { moduleId: "mali", sectionId: "sanda-mali", label: "سند مالی — journal vouchers" },
+  ],
   deliverableChecklist: [
     { item: "Balance department placeholder documented", done: true },
     { item: "Detailed accounting workflows with ENCC", done: false },

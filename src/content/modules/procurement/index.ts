@@ -1,5 +1,8 @@
 import { createDepartmentModule } from "../createDepartmentModule";
 import { procureItemSection } from "./procurement";
+import { propertyLeaseSection } from "./property-lease";
+import { projectsSection } from "./projects";
+import { smallProcurementSection } from "./small-procurement";
 
 export const procurementModule = createDepartmentModule({
   id: "procurement",
@@ -7,17 +10,25 @@ export const procurementModule = createDepartmentModule({
   name: "Procurement",
   nameDari: "تدارکات",
   location: "ENCC HQ — تدارکات",
-  purpose: "Purchase items unavailable in Storage or Items inventory.",
+  purpose: "Purchases, property leases, major projects, and small procurements.",
   overview:
-    "Procurement department buys materials when Storage or Items cannot fulfill from stock. After delivery, the originating department distributes to the requester.",
+    "Procurement handles out-of-stock item purchases, property rental lifecycle, major bid projects (≥ 5M AFN), and routine small purchases (< 5M AFN). Contract types are maintained in General Tables.",
   purposes: [
     "Receive out-of-stock requisitions from Storage and Items",
-    "Create purchase orders and manage vendors",
-    "Record receipt and trigger distribution",
+    "Manage property leases — bids, tenants, rent collection",
+    "Register major project contracts (≥ 5M AFN) with optional line items",
+    "Record small procurements (< 5M AFN) with auto-calculated totals",
   ],
-  sections: [procureItemSection],
+  sections: [
+    procureItemSection,
+    propertyLeaseSection,
+    projectsSection,
+    smallProcurementSection,
+  ],
   relatedModules: [
     { code: "STR", name: "Storage", relation: "Forwards unavailable storage requests" },
     { code: "ITM", name: "Items", relation: "Forwards unavailable items requests" },
+    { code: "PROP", name: "Properties", relation: "Property account header for leases" },
+    { code: "GEN", name: "General Tables", relation: "Procurement contract types" },
   ],
 });

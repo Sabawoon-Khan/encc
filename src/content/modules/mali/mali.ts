@@ -321,6 +321,7 @@ export const maliSection: SectionDefinition = {
     },
   ],
   crossModuleNotes: [
+    "سند مالی and chart of accounts are documented in section sanda-mali — foundation for future ledger and balance tasks.",
     "Additional Mali workflows (rent, property payments) will be documented in separate future sections.",
     "Uploaded Bank Receipt table is shared — see General Tables ENT-OPR-G008.",
     "Mali cannot create customers — Operations only.",

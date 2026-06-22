@@ -10,6 +10,7 @@ import { oprModule } from "./opr";
 import { procurementModule } from "./procurement";
 import { propertiesModule } from "./properties";
 import { salariesModule } from "./salaries";
+import { siteModule } from "./site";
 import { salesModule } from "./sales";
 import { sharedModule } from "./shared";
 import { storageModule } from "./storage";
@@ -29,6 +30,7 @@ export const modules: ModuleDefinition[] = [
   hrModule,
   balanceModule,
   propertiesModule,
+  siteModule,
   archiveModule,
 ];
 

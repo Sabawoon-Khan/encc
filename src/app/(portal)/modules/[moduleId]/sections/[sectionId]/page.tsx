@@ -22,6 +22,7 @@ import {
 } from "@/components/RequirementTables";
 import { EvidenceSection } from "@/components/EvidenceSection";
 import { QuestionsPanel } from "@/components/QuestionsPanel";
+import { SandaMaliDemo } from "@/components/SandaMaliDemo";
 
 function rvActions(enabled: boolean, topicId: string, label: string) {
   return enabled ? <TopicReviewActions topicId={topicId} label={label} /> : undefined;
@@ -96,6 +97,17 @@ export default async function SectionPage({
           ))}
         </ul>
       </TemplateSection>
+
+      {moduleId === "mali" && sectionId === "sanda-mali" && (
+        <TemplateSection
+          number="§6a"
+          title="Interactive Sample — سند مالی Form & Finder"
+          id="sample-ui"
+          actions={rvActions(rv, "sample-ui", "Interactive Sample")}
+        >
+          <SandaMaliDemo />
+        </TemplateSection>
+      )}
 
       {section.roles && section.roles.length > 0 && (
         <TemplateSection
@@ -223,8 +235,8 @@ export default async function SectionPage({
           actions={rvActions(rv, "nfrs", "Non-Functional Requirements")}
         >
           <ul className="space-y-2 text-sm">
-            {section.nfrs.map((n) => (
-              <li key={n.area} className="rounded-lg border border-slate-100 px-4 py-3">
+            {section.nfrs.map((n, i) => (
+              <li key={`${n.area}-${i}`} className="rounded-lg border border-slate-100 px-4 py-3">
                 <span className="font-medium text-slate-800">{n.area}: </span>
                 <span className="text-slate-600">{n.requirement}</span>
               </li>

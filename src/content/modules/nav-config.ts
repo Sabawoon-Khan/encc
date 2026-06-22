@@ -15,4 +15,5 @@ export const DEPARTMENT_NAV = [
   { moduleId: "hr", label: "منابع بشری" },
   { moduleId: "balance", label: "بیلانس" },
   { moduleId: "properties", label: "جایداد ها" },
+  { moduleId: "site", label: "سایت / معدن" },
 ] as const;

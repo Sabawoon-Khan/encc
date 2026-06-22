@@ -1,5 +1,5 @@
 import { createDepartmentModule } from "../createDepartmentModule";
-import { branchesSection } from "./properties";
+import { propertyRegisterSection } from "./property-register";
 
 export const propertiesModule = createDepartmentModule({
   id: "properties",
@@ -7,8 +7,13 @@ export const propertiesModule = createDepartmentModule({
   name: "Properties",
   nameDari: "جایداد ها",
   location: "ENCC HQ — جایداد ها",
-  purpose: "Branch offices and property records.",
-  overview: "Properties department — manages ENCC branches and property registry.",
-  purposes: ["Register and maintain branches", "Branch contact and manager records"],
-  sections: [branchesSection],
+  purpose: "Property asset registry and documentation.",
+  overview:
+    "Properties department — registers and maintains ENCC buildings, land, warehouses, and related assets with location, legal documents, and optional photos.",
+  purposes: [
+    "Register ENCC-owned properties — one task only",
+    "usage_status shows in use, vacant, or rented out (lease in Procurement)",
+    "Dynamic property types from General Tables; documents and optional images",
+  ],
+  sections: [propertyRegisterSection],
 });

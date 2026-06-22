@@ -1,5 +1,6 @@
 import { createDepartmentModule } from "../createDepartmentModule";
 import { maliSection } from "./mali";
+import { sandaMaliSection } from "./sanda-mali";
 
 export const maliModule = createDepartmentModule({
   id: "mali",
@@ -7,15 +8,16 @@ export const maliModule = createDepartmentModule({
   name: "Mali (Finance)",
   nameDari: "مالی",
   location: "ENCC HQ — مالی",
-  purpose: "Generate bank receipts, upload and verify customer payments.",
+  purpose: "Digital accounting (سند مالی), bank receipts, and payment verification.",
   overview:
-    "Mali (مالی) finance department. Prints bank payment receipts after boss approval, then uploads and verifies receipts after customer pays. Future task sections (rent, other payments) will be added here.",
+    "Mali (مالی) finance department. سند مالی and chart of accounts are the foundation for digitizing financial records. Also handles bank payment receipts after boss approval and payment verification after customer pays.",
   purposes: [
+    "سند مالی — chart of accounts, balanced journal vouchers, and attachments",
     "Generate product and weighing bank receipts for purchase requests",
     "Upload and verify bank receipt records after customer payment",
-    "Future: rent and property payment workflows",
+    "Future: journal summaries, balances, cash flow (separate sections)",
   ],
-  sections: [maliSection],
+  sections: [sandaMaliSection, maliSection],
   relatedModules: [
     { code: "OPR", name: "Executive Directorate", relation: "Parent directorate" },
     { code: "GEN", name: "General Tables", relation: "Bank accounts & uploaded receipts" },
@@ -26,6 +28,11 @@ export const maliModule = createDepartmentModule({
     {
       id: "OQ-MALI-001",
       question: "Exact bank receipt PDF layout for product and weighing — sample from ENCC",
+      owner: "ENCC Mali / Finance",
+    },
+    {
+      id: "OQ-MALI-003",
+      question: "Sample paper سند مالی form and numbering convention for file_id",
       owner: "ENCC Mali / Finance",
     },
   ],
