@@ -20,7 +20,7 @@ export const leaveRequestsSection: SectionDefinition = {
   ],
   precededBy: [{ moduleId: "hr", sectionId: "hr", label: "Employee master" }],
   followedBy: [],
-  relatedSections: ["hr", "salaries"],
+  relatedSections: ["hr", "employee-attendance", "salaries"],
   roles: [
     {
       role: "Employee / Department Staff",
@@ -344,10 +344,18 @@ export const leaveRequestsSection: SectionDefinition = {
     {
       id: "INT-HR-017",
       direction: "out",
+      module: "HR — Employee Attendance (ENT-HR-017)",
+      data: "approved leave days overlapping payroll month — reconcile with leave_required",
+      when: "Monthly attendance review",
+      note: "Attendance register is payroll authority after approval; leave register used for reconciliation",
+    },
+    {
+      id: "INT-HR-018",
+      direction: "out",
       module: "Salaries — Salary Payment (ENT-SAL-010)",
       data: "leave_type, duration_days, unpaid leave flag",
       when: "Payroll period includes leave",
-      note: "Future — unpaid leave deductions",
+      note: "Unpaid leave may affect salary; primary attendance data from ENT-HR-017 after batch approval",
     },
   ],
   crossModuleNotes: [

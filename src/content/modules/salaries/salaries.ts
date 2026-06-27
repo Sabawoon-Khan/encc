@@ -10,8 +10,8 @@ export const salariesSection: SectionDefinition = {
   status: "draft",
   summary: [
     "Monthly salary calculation and payroll register",
-    "Employee salary payment records",
-    "Deductions, allowances, and salary reports",
+    "Employee salary payment records — auto-generated from approved HR monthly attendance (ENT-HR-016/017)",
+    "Deductions, allowances, and salary reports driven by days_present, days_absent, and leave categories from HR attendance",
   ],
   entities: [
     {

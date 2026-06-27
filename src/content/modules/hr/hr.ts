@@ -19,11 +19,12 @@ export const hrSection: SectionDefinition = {
     "highest_education_level on employee — computed from education records for quick display",
     "Person Documents (ENT-HR-011) — child table per employee: document type, description, file, dates",
     "Leave requests registered in section leave-requests (ENT-HR-015)",
+    "Monthly attendance for permanent employees in section employee-attendance (ENT-HR-016/017)",
     "Active employees filtered by branch for pickers; on_leave and terminated excluded by default",
   ],
   precededBy: [],
   followedBy: [{ moduleId: "salaries", sectionId: "salaries", label: "Salaries" }],
-  relatedSections: ["leave-requests", "person-register", "salaries", "general-tables"],
+  relatedSections: ["leave-requests", "employee-attendance", "person-register", "salaries", "general-tables"],
   roles: [
     {
       role: "HR Clerk",
@@ -1195,6 +1196,7 @@ export const hrSection: SectionDefinition = {
     "Assignment History (ENT-HR-013) records every branch, department, and position move — current values on employee are always the latest effective assignment.",
     "Employee Education (ENT-HR-014) stores bachelor (لیسانس), master (ماجستیر), PhD (دکترا), diploma, etc. — highest_education_level on employee is computed.",
     "Leave requests are in section leave-requests (ENT-HR-015) — approved leave sets status=on_leave.",
+    "Monthly attendance for permanent employees is in employee-attendance (ENT-HR-016/017) — simple month + date range + title; six columns per employee; approved month auto-generates salaries.",
     "Person Documents (ENT-HR-011) are HR personnel files — separate from education certificate files on ENT-HR-014.",
     "Active + branch filter drives all employee pickers; terminated employees stay on historical records.",
   ],

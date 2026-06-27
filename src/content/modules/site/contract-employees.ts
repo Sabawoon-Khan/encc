@@ -15,7 +15,14 @@ export const contractEmployeesSection: SectionDefinition = {
     "Site Work Rate — per site prices for ترمیم اساسی, ترمیم جاری, حفریات (per cm), wagon, ton",
     "Only active employees appear on daily attendance and work reports",
   ],
-  relatedSections: ["daily-site-work", "general-tables"],
+  relatedSections: ["daily-attendance", "daily-work-report", "general-tables"],
+  followedBy: [
+    {
+      moduleId: "site",
+      sectionId: "daily-attendance",
+      label: "Daily Attendance",
+    },
+  ],
   roles: [
     {
       role: "Site Clerk",
