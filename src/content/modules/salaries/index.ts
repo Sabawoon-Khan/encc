@@ -1,4 +1,6 @@
 import { createDepartmentModule } from "../createDepartmentModule";
+import { payrollDataModelSection } from "./payroll-data-model";
+import { payrollFormsIndexSection } from "./payroll-forms-index";
 import { salariesSection } from "./salaries";
 
 export const salariesModule = createDepartmentModule({
@@ -10,16 +12,18 @@ export const salariesModule = createDepartmentModule({
   purpose:
     "Full payroll mapped to Crest Point forms PY-01…PY-20: named staff from locked timesheets + salary history, wages-based collective cash, advances, ARD tax, IC verification, payslips, bank/cash payment.",
   overview:
-    "Salaries department — implements North_Coal_ERP_Payroll_Forms.xlsx (PY-07–PY-20 and pay calc) with HR owning PY-01–PY-06 storage/leave/timesheet. Named employees and personnel files stay in HR; this module owns calculation, wages-based entry, advances, tax, IC gate, GL, and payment outputs.",
+    "Salaries — Forms Index (20 sheets) → process detail → end with clean HR & Payroll Data Model (ER) for builders. Detail workflows stay in middle sections; the last section is schema-only.",
   purposes: [
+    "Navigate all 20 Excel forms via Payroll Forms Index",
     "Generate PY-09 payroll from PY-05/06 timesheets and PY-02 pro-rata",
     "Record PY-10 wages-based collective cash per Second Unit",
     "Manage PY-07/08 salary advances and recovery",
     "Auto-calculate tax from PY-15 slabs; track PY-16 withholding",
     "PY-11 summary + PY-12 IC eight-point gate before PY-19 GL",
-    "Produce PY-13 payslips, PY-14 bank lists, and PY-20 report set",
+    "Produce PY-13 payslips, PY-14 bank lists (from ENT-HR-023), and PY-20 reports",
+    "Ship a clean ER / data model section for database builders",
   ],
-  sections: [salariesSection],
+  sections: [payrollFormsIndexSection, salariesSection, payrollDataModelSection],
   openQuestions: [
     {
       id: "OQ-SAL-001",

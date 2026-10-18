@@ -171,6 +171,65 @@ export interface SectionDefinition {
   followedBy?: TaskRef[];
   /** Show client review & scoring on this section page */
   enableReview?: boolean;
+  /**
+   * Optional Mermaid erDiagram (legacy). Prefer `schemaDiagram` for the clean
+   * colored table cards (PK column + field names).
+   */
+  schemaMermaid?: string;
+  /** Clean ER / schema overview for builders (colored table cards). */
+  schemaDiagram?: SchemaDiagram;
+  /** When true, page shows only the ER diagram (no info / objectives / TOC fluff). */
+  schemaOnly?: boolean;
+}
+
+export interface SchemaTableColumn {
+  name: string;
+  /** Primary key */
+  pk?: boolean;
+  /** Show * after name */
+  required?: boolean;
+  /** Short type label: text | number | bool | date | datetime | enum | ref | file */
+  type?: string;
+  /** Enum option values — shown in tooltip; type column stays compact as "enum" */
+  enums?: string[];
+  /**
+   * Foreign key target table id (matches SchemaTable.id).
+   * Shown as clickable "fk" — same page scrolls/highlights; set `fkHref` when the
+   * target table lives on another module ER page.
+   */
+  fkTo?: string;
+  /** Optional full path e.g. /modules/shared/sections/general-tables-er#branches */
+  fkHref?: string;
+}
+
+export interface SchemaTable {
+  id: string;
+  name: string;
+  /** Short store summary — shown on ER info (i) icon */
+  info?: string;
+  columns: SchemaTableColumn[];
+  /** Child / sub-tables rendered under this parent */
+  children?: SchemaTable[];
+}
+
+export interface SchemaGroup {
+  id: string;
+  label: string;
+  color: "blue" | "purple" | "green" | "yellow" | "brown" | "rose";
+  tables: SchemaTable[];
+}
+
+/** @deprecated FK click badges replace drawn lines — optional / unused */
+export interface SchemaRelation {
+  from: string;
+  to: string;
+  label?: string;
+}
+
+export interface SchemaDiagram {
+  groups: SchemaGroup[];
+  /** Unused — relationships shown via clickable fk badges */
+  relations?: SchemaRelation[];
 }
 
 export interface ExecutiveRole {

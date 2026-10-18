@@ -6,6 +6,7 @@ export interface TocItem {
 export const SECTION_TOC_ITEMS: TocItem[] = [
   { id: "info", label: "Section info" },
   { id: "objectives", label: "Objectives" },
+  { id: "schema", label: "Schema / ER" },
   { id: "roles", label: "Roles" },
   { id: "workflows", label: "Workflows" },
   { id: "data", label: "Data dictionary" },
@@ -24,6 +25,7 @@ export const SECTION_TOC_ITEMS: TocItem[] = [
 ];
 
 export interface SectionTocFlags {
+  hasSchema?: boolean;
   hasRoles?: boolean;
   hasWorkflows?: boolean;
   hasData?: boolean;
@@ -43,6 +45,7 @@ export interface SectionTocFlags {
 /** Build visible TOC items from section content flags (server-safe). */
 export function buildSectionTocItems(flags: SectionTocFlags): TocItem[] {
   const ids = new Set<string>(["info", "objectives"]);
+  if (flags.hasSchema) ids.add("schema");
   if (flags.hasRoles) ids.add("roles");
   if (flags.hasWorkflows) ids.add("workflows");
   if (flags.hasData) ids.add("data");
@@ -65,6 +68,8 @@ export function buildSectionTocItems(flags: SectionTocFlags): TocItem[] {
 /** Build flags directly from a section definition (server-safe). */
 export function sectionTocFlagsFromSection(section: {
   enableReview?: boolean;
+  schemaMermaid?: string;
+  schemaDiagram?: { groups?: unknown[] };
   roles?: unknown[];
   workflows: unknown[];
   entities: unknown[];
@@ -80,6 +85,9 @@ export function sectionTocFlagsFromSection(section: {
   deliverableChecklist?: unknown[];
 }): SectionTocFlags {
   return {
+    hasSchema:
+      !!section.schemaMermaid?.trim() ||
+      !!(section.schemaDiagram?.groups && section.schemaDiagram.groups.length > 0),
     hasRoles: !!section.roles?.length,
     hasWorkflows: section.workflows.length > 0,
     hasData: section.entities.length > 0,

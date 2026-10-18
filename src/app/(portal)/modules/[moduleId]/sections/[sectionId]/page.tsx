@@ -23,7 +23,8 @@ import {
 import { EvidenceSection } from "@/components/EvidenceSection";
 import { QuestionsPanel } from "@/components/QuestionsPanel";
 import { SandaMaliDemo } from "@/components/SandaMaliDemo";
-import { EmployeeAttendancePrintDemo } from "@/components/EmployeeAttendancePrintDemo";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
+import { CleanErDiagram } from "@/components/CleanErDiagram";
 
 function rvActions(enabled: boolean, topicId: string, label: string) {
   return enabled ? <TopicReviewActions topicId={topicId} label={label} /> : undefined;
@@ -60,6 +61,21 @@ export default async function SectionPage({
     );
   }
 
+  if (section.schemaOnly && section.schemaDiagram?.groups?.length) {
+    return (
+      <SectionPageShell
+        mod={mod}
+        section={section}
+        review={undefined}
+        sessionRole={sessionRole}
+      >
+        <div className="rounded-xl border border-slate-200 bg-white p-6">
+          <CleanErDiagram diagram={section.schemaDiagram} />
+        </div>
+      </SectionPageShell>
+    );
+  }
+
   return (
     <SectionPageShell
       mod={mod}
@@ -83,6 +99,7 @@ export default async function SectionPage({
         />
       </TemplateSection>
 
+      {section.summary.length > 0 && (
       <TemplateSection
         number="§6"
         title="Business Objective"
@@ -98,6 +115,7 @@ export default async function SectionPage({
           ))}
         </ul>
       </TemplateSection>
+      )}
 
       {moduleId === "mali" && sectionId === "sanda-mali" && (
         <TemplateSection
@@ -110,14 +128,22 @@ export default async function SectionPage({
         </TemplateSection>
       )}
 
-      {moduleId === "hr" && sectionId === "employee-attendance" && (
+      {(section.schemaDiagram?.groups?.length || section.schemaMermaid) && (
         <TemplateSection
-          number="§6a"
-          title="Printable Sample — Monthly Attendance PDF"
-          id="print-sample"
-          actions={rvActions(rv, "print-sample", "Printable Sample")}
+          number="§6b"
+          title="Tables & ER diagram"
+          id="schema"
+          actions={rvActions(rv, "schema", "Tables & ER diagram")}
         >
-          <EmployeeAttendancePrintDemo />
+          {section.schemaDiagram?.groups?.length ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-5">
+              <CleanErDiagram diagram={section.schemaDiagram} />
+            </div>
+          ) : section.schemaMermaid ? (
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-4">
+              <MermaidDiagram chart={section.schemaMermaid} />
+            </div>
+          ) : null}
         </TemplateSection>
       )}
 
@@ -150,9 +176,9 @@ export default async function SectionPage({
       {section.entities.length > 0 && (
         <TemplateSection
           number="§9"
-          title="Data Dictionary"
+          title={section.schemaMermaid ? "Tables (lean columns)" : "Data Dictionary"}
           id="data"
-          actions={rvActions(rv, "data", "Data Dictionary")}
+          actions={rvActions(rv, "data", section.schemaMermaid ? "Tables" : "Data Dictionary")}
         >
           <div className="space-y-6">
             {section.entities.map((entity) => (

@@ -103,8 +103,11 @@ export function SectionPageShell({
 }: SectionPageShellProps) {
   const tocItems = buildSectionTocItems(sectionTocFlagsFromSection(section));
   const reviewEnabled = section.enableReview && !!review;
+  const schemaOnly = !!section.schemaOnly;
 
-  const body = (
+  const body = schemaOnly ? (
+    <div className="min-w-0">{children}</div>
+  ) : (
     <>
       {reviewEnabled && <SectionReviewBar initialReview={review} />}
 
@@ -131,7 +134,9 @@ export function SectionPageShell({
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8">
+    <div
+      className={`mx-auto px-4 py-8 lg:px-8 ${schemaOnly ? "max-w-[1400px]" : "max-w-6xl"}`}
+    >
       <nav className="mb-4 flex flex-wrap items-center gap-1 text-sm text-slate-500">
         <Link href="/" className="hover:text-sky-600">
           Overview
@@ -141,37 +146,47 @@ export function SectionPageShell({
           {mod.nameDari ?? mod.code}
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-slate-800">{section.nameDari ?? section.name}</span>
+        <span className="text-slate-800">
+          {schemaOnly ? "Tables & ER diagram" : (section.nameDari ?? section.name)}
+        </span>
       </nav>
 
-      <header className="mb-4">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <StatusBadge status={section.status} />
-          <span className="text-xs text-slate-400">
-            {mod.code}/{section.id} · v{mod.version}
-          </span>
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900">
-          {section.nameDari ?? section.name}
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">{section.name}</p>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
-          {section.description}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <PrintButton
-            href={`/modules/${mod.id}/sections/${section.id}/print`}
-            label="Print this section"
-          />
-          <PrintButton
-            href={`/modules/${mod.id}/print`}
-            label="Print all sections in module"
-          />
-          <PrintButton href="/print" label="Print all modules" />
-        </div>
-      </header>
+      {schemaOnly ? (
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Tables & ER diagram</h1>
+        </header>
+      ) : (
+        <header className="mb-4">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <StatusBadge status={section.status} />
+            <span className="text-xs text-slate-400">
+              {mod.code}/{section.id} · v{mod.version}
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {section.nameDari ?? section.name}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">{section.name}</p>
+          {section.description ? (
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
+              {section.description}
+            </p>
+          ) : null}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <PrintButton
+              href={`/modules/${mod.id}/sections/${section.id}/print`}
+              label="Print this section"
+            />
+            <PrintButton
+              href={`/modules/${mod.id}/print`}
+              label="Print all sections in module"
+            />
+            <PrintButton href="/print" label="Print all modules" />
+          </div>
+        </header>
+      )}
 
-      <TaskFlowLinks moduleId={mod.id} section={section} />
+      {!schemaOnly && <TaskFlowLinks moduleId={mod.id} section={section} />}
 
       {reviewEnabled ? (
         <SectionReviewProvider

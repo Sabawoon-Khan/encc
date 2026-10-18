@@ -1,5 +1,6 @@
 import type { ModuleDefinition } from "@/types/requirements";
 import { generalTablesSection } from "./general-tables";
+import { generalTablesErSection } from "./general-tables-schema";
 
 export const sharedModule: ModuleDefinition = {
   id: "shared",
@@ -15,14 +16,15 @@ export const sharedModule: ModuleDefinition = {
   purpose:
     "Shared reference data used across departments — customers, products, mines, bank accounts, receipts.",
   overview:
-    "Central master data for the entire ERP. Departments reference these tables; changes apply to new transactions everywhere.",
+    "Central master data for the entire ERP. Open Tables & ER diagram for the clean schema view (parent / sub-tables, required *, types).",
   purposes: [
     "Single source of truth for customers, product types, mines, and bank accounts",
     "Reusable uploaded bank receipt records for purchases, rent, and other payments",
+    "Clean ER diagram for builders — required fields marked *, simple column types",
   ],
   executives: [],
   subOffices: [],
-  sections: [generalTablesSection],
+  sections: [generalTablesSection, generalTablesErSection],
   relatedModules: [
     { code: "OPR", name: "Executive Directorate", relation: "Parent organisation" },
     { code: "OPS", name: "Operations", relation: "Creates customers" },

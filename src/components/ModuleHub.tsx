@@ -201,24 +201,45 @@ function OprHub({ mod }: { mod: ModuleDefinition }) {
   );
 }
 
+function hasSchemaSection(sec: SectionDefinition) {
+  return (
+    !!sec.schemaMermaid?.trim() ||
+    !!(sec.schemaDiagram?.groups && sec.schemaDiagram.groups.length > 0)
+  );
+}
+
 function DefaultHub({ mod }: { mod: ModuleDefinition }) {
   const title = mod.id === "shared" ? mod.name : (mod.nameDari ?? mod.name);
+  const schemaSections = mod.sections.filter(hasSchemaSection);
+  const taskSections = mod.sections.filter((s) => !hasSchemaSection(s));
+  const primarySchema = schemaSections[0];
 
   return (
     <>
       <Breadcrumb mod={mod} />
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+          {primarySchema && (
+            <Link
+              href={`/modules/${mod.id}/sections/${primarySchema.id}`}
+              className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-sky-700"
+            >
+              Tables & ER diagram
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          )}
+        </div>
         <div className="mt-4">
           <PrintButton href={`/modules/${mod.id}/print`} label="Print all sections in this module" />
         </div>
       </header>
 
       <TaskGroup label="Tasks">
-        {mod.sections.length === 0 ? (
+        {taskSections.length === 0 ? (
           <p className="text-sm text-slate-500">No tasks documented yet.</p>
         ) : (
-          mod.sections.map((sec) => <TaskCard key={sec.id} modId={mod.id} sec={sec} />)
+          taskSections.map((sec) => <TaskCard key={sec.id} modId={mod.id} sec={sec} />)
         )}
       </TaskGroup>
     </>
