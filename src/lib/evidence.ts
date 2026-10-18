@@ -65,16 +65,21 @@ function mapEvidenceRow(row: {
 async function readManifestFromSupabase(
   filter?: { moduleId?: string; sectionId?: string }
 ): Promise<EvidenceManifest> {
-  const supabase = getSupabase();
-  let query = supabase
-    .from("evidence_items")
-    .select("*")
-    .order("uploaded_at", { ascending: false });
-  if (filter?.moduleId) query = query.eq("module_id", filter.moduleId);
-  if (filter?.sectionId) query = query.eq("section_id", filter.sectionId);
-  const { data, error } = await query;
-  if (error) throw new Error(errorMessage(error));
-  return { items: (data ?? []).map(mapEvidenceRow) };
+  try {
+    const supabase = getSupabase();
+    let query = supabase
+      .from("evidence_items")
+      .select("*")
+      .order("uploaded_at", { ascending: false });
+    if (filter?.moduleId) query = query.eq("module_id", filter.moduleId);
+    if (filter?.sectionId) query = query.eq("section_id", filter.sectionId);
+    const { data, error } = await query;
+    if (error) throw new Error(errorMessage(error));
+    return { items: (data ?? []).map(mapEvidenceRow) };
+  } catch (err) {
+    console.error("[evidence] Failed to read from Supabase:", errorMessage(err));
+    return { items: [] };
+  }
 }
 
 export async function readManifest(): Promise<EvidenceManifest> {
@@ -173,9 +178,10 @@ export async function getEvidenceForSection(
     items = manifest.items;
   } else {
     if (isHostedDeployment()) {
-      throw new Error(
-        "Evidence storage is not configured for production. Add Supabase env vars on Vercel."
+      console.error(
+        "[evidence] Evidence storage is not configured for production. Add Supabase env vars on Vercel."
       );
+      return [];
     }
     const manifest = await readManifestFromFile();
     items = manifest.items.filter(

@@ -61,22 +61,28 @@ async function readReviewsFromFile(): Promise<ReviewsStore> {
 }
 
 async function readReviewsFromSupabase(): Promise<ReviewsStore> {
-  const supabase = getSupabase();
-  const { data, error } = await supabase.from("section_reviews").select("data");
-  if (error) throw new Error(errorMessage(error));
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.from("section_reviews").select("data");
+    if (error) throw new Error(errorMessage(error));
 
-  const sections: ReviewsStore["sections"] = {};
-  for (const row of data ?? []) {
-    const review = row.data as SectionReview;
-    sections[reviewKey(review.moduleId, review.sectionId)] = {
-      ...review,
-      topicScores: review.topicScores ?? {},
-      signOffPersonnel: review.signOffPersonnel ?? [],
-      feedback: review.feedback ?? [],
-      auditLog: review.auditLog ?? [],
-    };
+    const sections: ReviewsStore["sections"] = {};
+    for (const row of data ?? []) {
+      const review = row.data as SectionReview;
+      sections[reviewKey(review.moduleId, review.sectionId)] = {
+        ...review,
+        topicScores: review.topicScores ?? {},
+        signOffPersonnel: review.signOffPersonnel ?? [],
+        feedback: review.feedback ?? [],
+        auditLog: review.auditLog ?? [],
+      };
+    }
+    return { sections };
+  } catch (err) {
+    // Docs pages must still render if Supabase is unreachable/misconfigured.
+    console.error("[reviews] Failed to read from Supabase:", errorMessage(err));
+    return { sections: {} };
   }
-  return { sections };
 }
 
 export async function readReviewsStore(): Promise<ReviewsStore> {
@@ -198,23 +204,31 @@ async function getSectionReviewFromSupabase(
   moduleId: string,
   sectionId: string
 ): Promise<SectionReview | null> {
-  const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("section_reviews")
-    .select("data")
-    .eq("module_id", moduleId)
-    .eq("section_id", sectionId)
-    .maybeSingle();
-  if (error) throw new Error(errorMessage(error));
-  if (!data) return null;
-  const review = data.data as SectionReview;
-  return {
-    ...review,
-    topicScores: review.topicScores ?? {},
-    signOffPersonnel: review.signOffPersonnel ?? [],
-    feedback: review.feedback ?? [],
-    auditLog: review.auditLog ?? [],
-  };
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("section_reviews")
+      .select("data")
+      .eq("module_id", moduleId)
+      .eq("section_id", sectionId)
+      .maybeSingle();
+    if (error) throw new Error(errorMessage(error));
+    if (!data) return null;
+    const review = data.data as SectionReview;
+    return {
+      ...review,
+      topicScores: review.topicScores ?? {},
+      signOffPersonnel: review.signOffPersonnel ?? [],
+      feedback: review.feedback ?? [],
+      auditLog: review.auditLog ?? [],
+    };
+  } catch (err) {
+    console.error(
+      `[reviews] Failed to load ${moduleId}/${sectionId} from Supabase:`,
+      errorMessage(err)
+    );
+    return null;
+  }
 }
 
 export async function getSectionReview(
@@ -231,9 +245,11 @@ export async function getSectionReview(
     return base;
   }
   if (isHostedDeployment()) {
-    throw new Error(
-      "Review storage is not configured for production. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel."
+    // Prefer empty reviews over a hard 500 when remote store is misconfigured.
+    console.error(
+      "[reviews] Review storage is not configured for production. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY on Vercel."
     );
+    return emptyReview(moduleId, sectionId);
   }
   const store = await readReviewsFromFile();
   const key = reviewKey(moduleId, sectionId);

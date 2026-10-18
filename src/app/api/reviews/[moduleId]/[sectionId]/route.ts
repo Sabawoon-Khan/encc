@@ -28,13 +28,17 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ moduleId: string; sectionId: string }> }
 ) {
-  const { moduleId, sectionId } = await params;
-  if (!isValidReviewTarget(moduleId, sectionId)) {
-    return NextResponse.json({ error: "Section not found" }, { status: 404 });
+  try {
+    const { moduleId, sectionId } = await params;
+    if (!isValidReviewTarget(moduleId, sectionId)) {
+      return NextResponse.json({ error: "Section not found" }, { status: 404 });
+    }
+    const review = await getSectionReview(moduleId, sectionId);
+    const role = await getSessionRole();
+    return NextResponse.json({ review, role });
+  } catch (err) {
+    return NextResponse.json({ error: errorMessage(err) }, { status: 500 });
   }
-  const review = await getSectionReview(moduleId, sectionId);
-  const role = await getSessionRole();
-  return NextResponse.json({ review, role });
 }
 
 export async function POST(
