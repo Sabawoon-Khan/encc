@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { SectionReviewBar } from "@/components/SectionReviewBar";
 import { SectionReviewProvider } from "@/components/SectionReviewContext";
 import { SectionTOC } from "@/components/SectionTOC";
+import { PrintButton } from "@/components/print/PrintButton";
 import {
   buildSectionTocItems,
   sectionTocFlagsFromSection,
@@ -157,6 +158,17 @@ export function SectionPageShell({
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
           {section.description}
         </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <PrintButton
+            href={`/modules/${mod.id}/sections/${section.id}/print`}
+            label="Print this section"
+          />
+          <PrintButton
+            href={`/modules/${mod.id}/print`}
+            label="Print all sections in module"
+          />
+          <PrintButton href="/print" label="Print all modules" />
+        </div>
       </header>
 
       <TaskFlowLinks moduleId={mod.id} section={section} />

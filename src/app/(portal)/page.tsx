@@ -3,6 +3,7 @@ import { BookOpen, FileText, Users } from "lucide-react";
 import { modules } from "@/content/modules";
 import { glossary } from "@/content/glossary";
 import { ModuleCard } from "@/components/ModuleCard";
+import { PrintButton } from "@/components/print/PrintButton";
 
 export default function HomePage() {
   const totalSections = modules.reduce((n, m) => n + m.sections.length, 0);
@@ -25,6 +26,13 @@ export default function HomePage() {
           departments, sections, fields, workflows, and upload evidence for
           developers and analysts.
         </p>
+        <div className="mt-5">
+          <PrintButton
+            href="/print"
+            label="Print all modules & sections (PDF)"
+            variant="primary"
+          />
+        </div>
       </header>
 
       <div className="mb-10 grid gap-4 sm:grid-cols-3">

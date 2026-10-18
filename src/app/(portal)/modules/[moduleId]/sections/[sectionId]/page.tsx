@@ -23,6 +23,7 @@ import {
 import { EvidenceSection } from "@/components/EvidenceSection";
 import { QuestionsPanel } from "@/components/QuestionsPanel";
 import { SandaMaliDemo } from "@/components/SandaMaliDemo";
+import { EmployeeAttendancePrintDemo } from "@/components/EmployeeAttendancePrintDemo";
 
 function rvActions(enabled: boolean, topicId: string, label: string) {
   return enabled ? <TopicReviewActions topicId={topicId} label={label} /> : undefined;
@@ -106,6 +107,17 @@ export default async function SectionPage({
           actions={rvActions(rv, "sample-ui", "Interactive Sample")}
         >
           <SandaMaliDemo />
+        </TemplateSection>
+      )}
+
+      {moduleId === "hr" && sectionId === "employee-attendance" && (
+        <TemplateSection
+          number="§6a"
+          title="Printable Sample — Monthly Attendance PDF"
+          id="print-sample"
+          actions={rvActions(rv, "print-sample", "Printable Sample")}
+        >
+          <EmployeeAttendancePrintDemo />
         </TemplateSection>
       )}
 

@@ -4,6 +4,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import type { ModuleDefinition, SectionDefinition, TaskRef } from "@/types/requirements";
 import { getModule, getParentModule, resolveTaskFlow, resolveTaskRef } from "@/content/modules";
 import { DEPARTMENT_NAV, DIRECTORATE_NAV } from "@/content/modules/nav-config";
+import { PrintButton } from "@/components/print/PrintButton";
 
 function Breadcrumb({ mod }: { mod: ModuleDefinition }) {
   const parent = getParentModule(mod.id);
@@ -156,6 +157,9 @@ function OprHub({ mod }: { mod: ModuleDefinition }) {
       <Breadcrumb mod={mod} />
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">{mod.nameDari}</h1>
+        <div className="mt-4">
+          <PrintButton href={`/modules/${mod.id}/print`} label="Print all sections in this module" />
+        </div>
       </header>
 
       <div className="space-y-8">
@@ -205,6 +209,9 @@ function DefaultHub({ mod }: { mod: ModuleDefinition }) {
       <Breadcrumb mod={mod} />
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+        <div className="mt-4">
+          <PrintButton href={`/modules/${mod.id}/print`} label="Print all sections in this module" />
+        </div>
       </header>
 
       <TaskGroup label="Tasks">

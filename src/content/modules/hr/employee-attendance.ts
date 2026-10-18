@@ -13,9 +13,9 @@ export const employeeAttendanceSection: SectionDefinition = {
     "Monthly Attendance (ENT-HR-016) — month, date from, date to, title",
     "Attendance Line (ENT-HR-017) — one row per permanent employee",
     "Line columns: days_present, days_absent, leave_required, holiday_leave, makul, khademati — all day counts",
-    "Footer: column totals for the month",
-    "Year reports: month-by-month and yearly totals per employee",
-    "Approved month → auto salary in Salaries",
+    "Print PDF anytime — draft or approved; no approval required to print",
+    "Sign on paper (HR Clerk, HR Manager, ENCC) — separate from system approval",
+    "Approval only required for salary generation in معاشات",
   ],
   precededBy: [{ moduleId: "hr", sectionId: "hr", label: "Employee master" }],
   followedBy: [{ moduleId: "salaries", sectionId: "salaries", label: "Salaries" }],
@@ -24,7 +24,7 @@ export const employeeAttendanceSection: SectionDefinition = {
     {
       role: "HR Clerk",
       location: "HQ — منابع بشری",
-      mainActions: "Create monthly attendance, enter or import lines, submit",
+      mainActions: "Create monthly attendance, enter lines, print PDF anytime",
       approval: false,
       readOnly: false,
     },
@@ -197,7 +197,7 @@ export const employeeAttendanceSection: SectionDefinition = {
       trigger: "End of Hijri month",
       startActor: "HR Clerk",
       endState: "Approved attendance — salaries auto-created",
-      flowDiagram: "Select month + dates + title → load permanent employees → enter six columns → approve → salaries",
+      flowDiagram: "Select month + dates + title → enter lines → print PDF (anytime) → approve (for salaries only)",
       steps: [
         {
           step: 1,
@@ -222,10 +222,17 @@ export const employeeAttendanceSection: SectionDefinition = {
         },
         {
           step: 4,
+          actor: "HR Clerk",
+          action: "Print PDF",
+          input: "Print button — available in draft or approved",
+          output: "PDF with header, lines, totals, sign-off blocks — no approval required",
+        },
+        {
+          step: 5,
           actor: "HR Manager",
-          action: "Approve",
+          action: "Approve for payroll",
           input: "status=approved",
-          output: "Salary drafts created in معاشات for this month",
+          output: "Salary drafts created in معاشات — approval not required for print",
         },
       ],
     },
@@ -260,6 +267,13 @@ export const employeeAttendanceSection: SectionDefinition = {
       severity: "High",
     },
     {
+      id: "BR-HR-035",
+      rule: "Print PDF available anytime — draft or approved; no approval required to print",
+      trigger: "Click Print on monthly attendance",
+      response: "Generate PDF with header, lines, footer totals, sign-off blocks",
+      severity: "High",
+    },
+    {
       id: "BR-HR-034",
       rule: "Approved attendance auto-creates salary drafts in Salaries",
       trigger: "Approve",
@@ -275,30 +289,13 @@ export const employeeAttendanceSection: SectionDefinition = {
   reports: [
     {
       id: "RPT-HR-018",
-      name: "Monthly Attendance Sheet",
-      purpose: "One month — all permanent employees with six columns and footer totals",
-      filters: "hijri_year, hijri_month, title",
+      name: "Monthly Attendance Register (PDF — printable & sign-off)",
+      purpose:
+        "Single printable PDF per Hijri month — ENCC letterhead, title, date from/to, employee table, footer totals, signature blocks. Available in draft or approved — print anytime, no approval required. Sign on paper separately.",
+      filters: "Select one monthly attendance record (hijri_year, hijri_month)",
       columns:
-        "employee, days_present, days_absent, leave_required, holiday_leave, makul, khademati | footer totals",
-      export: "PDF, Excel",
-    },
-    {
-      id: "RPT-HR-019",
-      name: "Employee Year Register",
-      purpose: "One employee — each month in the year with six columns; year totals at bottom",
-      filters: "employee_id, hijri_year",
-      columns:
-        "month, days_present, days_absent, leave_required, holiday_leave, makul, khademati | year totals",
-      export: "PDF, Excel",
-    },
-    {
-      id: "RPT-HR-020",
-      name: "Yearly Summary",
-      purpose: "All permanent employees — yearly totals per column for one Hijri year",
-      filters: "hijri_year, branch, department",
-      columns:
-        "employee, total_present, total_absent, total_leave_required, total_holiday_leave, total_makul, total_khademati",
-      export: "PDF, Excel",
+        "header: attendance_id, title, year, month, date_from, date_to | table: #, employee, department, days_present, days_absent, leave_required, holiday_leave, makul, khademati | footer: column totals | signatures: HR Clerk, HR Manager, ENCC",
+      export: "PDF — print & sign (A4 landscape)",
     },
   ],
   validationRules: [
@@ -345,13 +342,14 @@ export const employeeAttendanceSection: SectionDefinition = {
     "Simple monthly form — month, from/to dates, title, then one line per permanent employee.",
     "Six columns on each line — all day counts: days_present, days_absent, leave_required, holiday_leave, makul, khademati.",
     "Separate from Site daily attendance (contract workers).",
-    "Approved month feeds معاشات automatically.",
+    "Print PDF anytime — no approval required. Paper sign-off (HR Clerk, HR Manager, ENCC) is separate.",
+    "System approval (status=approved) is only for salary generation in معاشات.",
   ],
   deliverableChecklist: [
     { item: "Simple header — month, date from/to, title", done: true },
     { item: "Six-column attendance lines for permanent employees", done: true },
-    { item: "Monthly footer totals and yearly reports", done: true },
+    { item: "Single printable PDF with ENCC sign-off blocks", done: true },
     { item: "Salary auto-generation on approve", done: true },
-    { item: "ENCC sign-off on fingerprint import format", done: false },
+    { item: "ENCC sign-off on PDF layout and fingerprint import", done: false },
   ],
 };
