@@ -35,15 +35,32 @@ body {
   }
 
   .print-section {
-    break-inside: avoid-page;
+    break-before: page;
+    break-inside: auto;
+  }
+
+  .print-section:first-of-type {
+    break-before: auto;
   }
 
   .print-sign-off {
     break-before: page;
   }
 
+  .print-doc-header {
+    break-after: avoid;
+  }
+
   table {
     font-size: 9px;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid;
   }
 
   a {

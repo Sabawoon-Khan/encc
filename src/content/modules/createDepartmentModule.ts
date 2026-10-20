@@ -1,8 +1,9 @@
 import type { ModuleDefinition, SectionDefinition } from "@/types/requirements";
+import { BRAND } from "@/content/brand";
 
 const ENCC_BASE = {
-  client: "ENCC — National Coal Corporation",
-  analyst: "Yaqeen Technology",
+  client: BRAND.clientFull,
+  analyst: `${BRAND.analyst} · design confirmed with ${BRAND.designPartner}`,
   version: "1.0",
   status: "draft" as const,
 };

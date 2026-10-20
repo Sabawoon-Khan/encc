@@ -11,8 +11,8 @@ export const oprModule: ModuleDefinition = {
   sidebarGroup: "directorate",
   status: "draft",
   location: "ENCC HQ — ریایست اجرایه",
-  client: "ENCC — National Coal Corporation",
-  analyst: "Yaqeen Technology",
+  client: "ENCC — North Coal State Owned Corporation",
+  analyst: "Yaqeen Technology · design confirmed with Crest Point",
   version: "1.0",
   purpose:
     "HQ executive layer — standards, boss approvals, and coordination across departments.",

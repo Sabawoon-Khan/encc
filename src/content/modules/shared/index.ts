@@ -10,8 +10,8 @@ export const sharedModule: ModuleDefinition = {
   sidebarGroup: "shared",
   status: "draft",
   location: "ENCC HQ — all departments",
-  client: "ENCC — National Coal Corporation",
-  analyst: "Yaqeen Technology",
+  client: "ENCC — North Coal State Owned Corporation",
+  analyst: "Yaqeen Technology · design confirmed with Crest Point",
   version: "1.0",
   purpose:
     "Shared reference data used across departments — customers, products, mines, bank accounts, receipts.",

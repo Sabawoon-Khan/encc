@@ -43,14 +43,8 @@ export function FieldTable({ fields }: { fields: RequirementField[] }) {
                 <code className="rounded bg-sky-50 px-1.5 py-0.5 font-mono text-xs text-sky-800">
                   {f.name}
                 </code>
-                <p className="mt-1 text-xs font-semibold text-slate-800">
-                  {f.label}
-                </p>
-                {f.labelDari && (
-                  <p className="text-xs text-slate-400">{f.labelDari}</p>
-                )}
                 {f.verify && (
-                  <span className="mt-1 inline-block text-xs font-semibold text-amber-600">
+                  <span className="mt-1 block text-xs font-semibold text-amber-600">
                     Verify at workshop
                   </span>
                 )}

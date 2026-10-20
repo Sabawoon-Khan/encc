@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpen, FileText, Users } from "lucide-react";
 import { modules } from "@/content/modules";
 import { glossary } from "@/content/glossary";
+import { BRAND } from "@/content/brand";
 import { ModuleCard } from "@/components/ModuleCard";
 import { PrintButton } from "@/components/print/PrintButton";
 
@@ -16,15 +17,15 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-6 py-10 lg:px-10">
       <header className="mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">
-          Shams Hilal Template v2.2
+          {BRAND.clientShort} · {BRAND.designPartner}
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          ENCC ERP Requirements Hub
+          {BRAND.productTitle}
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
-          Living documentation for National Coal Corporation ERP modules. Browse
-          departments, sections, fields, workflows, and upload evidence for
-          developers and analysts.
+          Requirements for {BRAND.clientFull}. Payroll design confirmed with{" "}
+          {BRAND.designPartner}; documented by {BRAND.analyst}. Browse departments,
+          sections, fields, and workflows.
         </p>
         <div className="mt-5">
           <PrintButton

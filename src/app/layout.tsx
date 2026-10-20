@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ENCC ERP Requirements Hub",
+  title: "ENCC ERP Requirements · Crest Point",
   description:
-    "Protected business requirements documentation for ENCC ERP — review, score, and approve.",
+    "ENCC (North Coal) ERP requirements — payroll design confirmed with Crest Point. Review, score, and approve.",
 };
 
 export default function RootLayout({

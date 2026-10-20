@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Home, Table2 } from "lucide-react";
 import { modules } from "@/content/modules";
+import { BRAND } from "@/content/brand";
 import { DEPARTMENT_NAV, DIRECTORATE_NAV } from "@/content/modules/nav-config";
 
 function moduleHref(moduleId: string) {
@@ -14,29 +15,24 @@ function moduleHref(moduleId: string) {
   return `/modules/${moduleId}`;
 }
 
-const NAV = [
-  { href: "/", label: "Overview", icon: Home },
-  { href: "/glossary", label: "Glossary", icon: BookOpen },
-  { href: moduleHref("shared"), label: "General Tables", icon: Table2 },
-];
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function NavLink({
   href,
   label,
   active,
-  nested,
 }: {
   href: string;
   label: string;
   active: boolean;
-  nested?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
-        nested ? "py-1.5 pl-6 text-xs" : ""
-      } ${
+      className={`block rounded-md px-2.5 py-1.5 text-sm transition-colors ${
         active
           ? "bg-sky-50 font-medium text-sky-700"
           : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -47,62 +43,104 @@ function NavLink({
   );
 }
 
+function SectionLabel({
+  children,
+  href,
+  active,
+}: {
+  children: string;
+  href?: string;
+  active?: boolean;
+}) {
+  const className =
+    "mb-1 mt-5 block px-2.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400 first:mt-0";
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${className} ${active ? "text-sky-600" : "hover:text-slate-600"}`}
+      >
+        {children}
+      </Link>
+    );
+  }
+
+  return <p className={className}>{children}</p>;
+}
+
 export function Sidebar() {
   const pathname = usePathname();
-  const oprActive = pathname.startsWith("/modules/opr");
+  const sharedHref = moduleHref("shared");
 
   return (
-    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <div className="border-b border-slate-200 px-4 py-4">
-        <p className="text-sm font-bold text-slate-900">ENCC ERP</p>
+    <aside className="flex h-full w-52 shrink-0 flex-col border-r border-slate-200 bg-white">
+      <div className="border-b border-slate-200 px-3 py-3.5">
+        <p className="text-sm font-bold tracking-tight text-slate-900">{BRAND.productShort}</p>
+        <p className="mt-0.5 text-[10px] leading-snug text-slate-400">
+          {BRAND.clientShort} · {BRAND.designPartner}
+        </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         <ul className="space-y-0.5">
-          {NAV.map(({ href, label, icon: Icon }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  pathname === href || pathname.startsWith(href + "/")
-                    ? "bg-sky-50 font-medium text-sky-700"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                <Icon className="h-4 w-4 shrink-0 opacity-60" />
-                {label}
-              </Link>
-            </li>
-          ))}
+          <li>
+            <Link
+              href="/"
+              className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+                isActive(pathname, "/")
+                  ? "bg-sky-50 font-medium text-sky-700"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <Home className="h-3.5 w-3.5 shrink-0 opacity-50" />
+              Overview
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/glossary"
+              className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+                isActive(pathname, "/glossary")
+                  ? "bg-sky-50 font-medium text-sky-700"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0 opacity-50" />
+              Glossary
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={sharedHref}
+              className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+                pathname.startsWith("/modules/shared")
+                  ? "bg-sky-50 font-medium text-sky-700"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              <Table2 className="h-3.5 w-3.5 shrink-0 opacity-50" />
+              General Tables
+            </Link>
+          </li>
         </ul>
 
-        <p className="mb-1 mt-5 px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-          ریایست اجرایه
-        </p>
+        <SectionLabel href="/modules/opr" active={pathname.startsWith("/modules/opr")}>
+          ریاست اجرایه
+        </SectionLabel>
         <ul className="space-y-0.5">
-          <li>
-            <NavLink
-              href="/modules/opr"
-              label="Overview"
-              active={oprActive}
-              nested
-            />
-          </li>
           {DIRECTORATE_NAV.map(({ moduleId, label }) => (
             <li key={moduleId}>
               <NavLink
                 href={moduleHref(moduleId)}
                 label={label}
                 active={pathname.startsWith(`/modules/${moduleId}`)}
-                nested
               />
             </li>
           ))}
         </ul>
 
-        <p className="mb-1 mt-5 px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-          Departments
-        </p>
+        <SectionLabel>Departments</SectionLabel>
         <ul className="space-y-0.5">
           {DEPARTMENT_NAV.map(({ moduleId, label }) => (
             <li key={moduleId}>
@@ -110,7 +148,6 @@ export function Sidebar() {
                 href={moduleHref(moduleId)}
                 label={label}
                 active={pathname.startsWith(`/modules/${moduleId}`)}
-                nested
               />
             </li>
           ))}
