@@ -10,32 +10,39 @@ export const salariesModule = createDepartmentModule({
   nameDari: "معاشات",
   location: "ENCC HQ — معاشات",
   purpose:
-    "Full payroll mapped to Crest Point forms PY-01…PY-20: named staff from locked timesheets + salary history, wages-based collective cash, advances, ARD tax, IC verification, payslips, bank/cash payment.",
+    "Payroll from Crest Point Report - North Coal §4.3 + forms PY-07…20 for ENCC — advances, named payroll from locked timesheets, wages-based collective cash, ARD tax, IC eight-check gate, payslips, bank list, corrections, auto GL. PY-01…06 are in HR.",
   overview:
-    "Salaries — Forms Index (20 sheets) → process detail → end with clean HR & Payroll Data Model (ER) for builders. Detail workflows stay in middle sections; the last section is schema-only.",
+    "معاشات — Forms Index → process detail (lean entities = ER) → Tables & ER. Aligned to Report §4.3 To-Be, BPMN-3/4/5, developer specs §4.3.4, and Excel PY-07…20. HR owns employee/leave/timesheet; this module owns the pay run.",
   purposes: [
-    "Navigate all 20 Excel forms via Payroll Forms Index",
-    "Generate PY-09 payroll from PY-05/06 timesheets and PY-02 pro-rata",
-    "Record PY-10 wages-based collective cash per Second Unit",
-    "Manage PY-07/08 salary advances and recovery",
-    "Auto-calculate tax from PY-15 slabs; track PY-16 withholding",
-    "PY-11 summary + PY-12 IC eight-point gate before PY-19 GL",
-    "Produce PY-13 payslips, PY-14 bank lists (from ENT-HR-023), and PY-20 reports",
-    "Ship a clean ER / data model section for database builders",
+    "Map Report §4.3 + all 20 Crest Point forms via Payroll Forms Index",
+    "PY-07/08 salary advances (BPMN-3) and recovery ledger",
+    "PY-09/11 payroll period + named lines (PY-02 pro-rata; OT from timesheet)",
+    "PY-10 wages-based collective cash per Second Unit",
+    "PY-12 IC eight Report checks before payment / GL",
+    "PY-13 payslips (Report display fields), PY-14 bank, PY-15/16 tax",
+    "PY-17 correction (BPMN-5), PY-18 matrix, PY-19 five GL triggers, PY-20 reports",
+    "Compliance: ISO 9001 sequence, IAS 19 accrual, Afghan/ARD tax",
+    "Shared Tables & ER diagram for builders",
   ],
   sections: [payrollFormsIndexSection, salariesSection, payrollDataModelSection],
   openQuestions: [
     {
       id: "OQ-SAL-001",
       question:
-        "Confirm ARD tax slab rates and remittance deadline parameters before go-live (PY-15 notes cite a secondary source).",
+        "Confirm ARD tax slab rates and remittance deadline before go-live (PY-15/16 cite a secondary source).",
       owner: "ENCC Payroll + Finance",
     },
     {
       id: "OQ-SAL-002",
       question:
-        "Confirm GL amount basis for rent/electricity deductions (Crest Point PY-19 note — no posting listed for those two).",
+        "Confirm GL amount basis for rent/electricity deductions (Crest Point PY-19 lists no posting for those two).",
       owner: "ENCC Finance",
+    },
+    {
+      id: "OQ-SAL-003",
+      question:
+        "Confirm overtime rate source — per employee, per grade, or single corporate rate (PY-09 note).",
+      owner: "ENCC Payroll",
     },
   ],
 });

@@ -17,6 +17,7 @@ export const generalTablesSchemaDiagram: SchemaDiagram = {
             { name: "customer_code", type: "text", required: true },
             { name: "first_name", type: "text", required: true },
             { name: "father_name", type: "text", required: true },
+            { name: "display_name", type: "text", required: true },
             { name: "phone", type: "text" },
             { name: "national_id", type: "text" },
             { name: "is_active", type: "bool", required: true },
@@ -81,10 +82,26 @@ export const generalTablesSchemaDiagram: SchemaDiagram = {
         {
           id: "branches",
           name: "branches",
-          info: "Shared branch/office list for HR and other modules. Inactive hidden from new picks.",
+          info: "HQ and Second Unit offices — HR assignment, wages PY-10, Items, Drivers, Properties. Inactive hidden from new picks.",
           columns: [
             { name: "id", pk: true, type: "text", required: true },
             { name: "name", type: "text", required: true },
+            {
+              name: "status",
+              type: "enum",
+              required: true,
+              enums: ["active", "inactive"],
+            },
+          ],
+        },
+        {
+          id: "departments",
+          name: "departments",
+          info: "Organizational departments (ریاست) — HR employee assignment, employment history, timesheet filters. Inactive hidden from new picks.",
+          columns: [
+            { name: "id", pk: true, type: "text", required: true },
+            { name: "name", type: "text", required: true },
+            { name: "name_dari", type: "text" },
             {
               name: "status",
               type: "enum",

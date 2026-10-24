@@ -7,6 +7,7 @@ import { itemsModule } from "./items";
 import { maliModule } from "./mali";
 import { operationsModule } from "./operations";
 import { oprModule } from "./opr";
+import { planningModule } from "./planning";
 import { procurementModule } from "./procurement";
 import { propertiesModule } from "./properties";
 import { salariesModule } from "./salaries";
@@ -28,6 +29,7 @@ export const modules: ModuleDefinition[] = [
   procurementModule,
   salariesModule,
   hrModule,
+  planningModule,
   balanceModule,
   propertiesModule,
   siteModule,

@@ -12,17 +12,18 @@ export const timesheetSection: SectionDefinition = {
   nameDari: "جدول اوقات کاری",
   enableReview: true,
   description:
-    "Primary time record for Permanent, Temporary, and wages-based presence (Crest Point PY-05/PY-06 + Report §4.3). Parent timesheet = Hijri year + month; day rows = employee_id + date + status/hours. Branch/department come from the employee. Approved leave from PY-03 auto-fills day status. Dept Head PY-06 locks the period and routes aggregates to معاشات. Month/branch attendance totals are calculated from timesheet_days — no separate monthly attendance tables.",
+    "Primary time record for named Permanent and Temporary staff (Crest Point PY-05/PY-06 + Report §4.3). Parent timesheet = Hijri year + month; day rows = employee_id + date + status/hours. Branch/department from employee. Approved leave auto-fills day status. Dept Head reviews their department’s rows then PY-06 locks → معاشات. Wages-based workers are not named on day rows — their pay is collective cash (Salaries PY-10); Report’s Second Unit timesheet wording covers named unit staff entry by the designated person.",
   status: "draft",
   currentTool: "Paper attendance / statistics from HR and Second Unit offices (Report as-is)",
   summary: [
     "Source: North_Coal_ERP_Payroll_Forms.xlsx PY-05/PY-06 + Report §4.3 Timesheet Recording",
     "timesheets (ENT-HR-020) — period parent: year, month, title, status, entered/finalized by",
     "timesheet_days (ENT-HR-021) — timesheet_id + employee_id + work_date + day_status + hours + notes",
-    "day_status: present | absent | annual_leave | urgency_leave | sick_leave | field_work | official_travel",
-    "Field Work / Official Travel = working days; OT still allowed",
-    "Who fills: HQ self-entry; designated officer for support staff; one designated person per Second Unit (incl. wages-based presence)",
-    "PY-06 = Dept Head locks parent → Payroll; corrections after lock via PY-17",
+    "day_status (Report labels): Present | Absent | Annual Leave | Urgency Leave | Sick Leave | Field Work | Official Travel",
+    "Field Work / Official Travel = working (not absent); OT still allowed",
+    "Who fills: HQ self-entry; designated officer for support staff; one designated person per Second Unit for all named unit staff",
+    "PY-06: Dept Head reviews department filter → locks parent → Payroll; post-lock corrections via PY-17",
+    "Wages-based: no named timesheet_days — Second Unit enters collective cash on PY-10",
   ],
   precededBy: [
     { moduleId: "hr", sectionId: "hr", label: "Employee master (PY-01)" },
@@ -41,14 +42,14 @@ export const timesheetSection: SectionDefinition = {
     {
       role: "Designated Timesheet Officer",
       location: "HQ department or Second Unit",
-      mainActions: "Enter day rows for support staff / all unit staff including wages-based presence",
+      mainActions: "Enter day rows for support staff (HQ) or all named Permanent/Temporary staff at Second Unit",
       approval: false,
       readOnly: false,
     },
     {
       role: "Department Head",
       location: "HQ / Branch",
-      mainActions: "Review department day rows (filter by employee), lock period (PY-06)",
+      mainActions: "Review own department day rows (Report §4.3), then lock period (PY-06) when department complete",
       approval: true,
       readOnly: false,
     },
@@ -332,7 +333,7 @@ export const timesheetSection: SectionDefinition = {
       severity: "Critical",
     },
     {
-      id: "BR-HR-045",
+      id: "BR-HR-046",
       rule: "Month / employee / branch totals = aggregate timesheet_days (no monthly_attendance table)",
       trigger: "Payroll generate or attendance report",
       response: "Sum day_status and hours; join employees for branch/dept",
@@ -346,7 +347,7 @@ export const timesheetSection: SectionDefinition = {
       purpose: "Department / Second Unit totals from day rows for locked period",
       filters: "Hijri year/month, branch, department, employee",
       columns:
-        "employee, employment_type, present, field, travel, absent, leave, regular_hours, ot_hours",
+        "employee, employment_type, present, field, travel, absent, leave, regular_hours, ot_hours, corp name/logo, generated_at, generated_by",
       export: "PDF, Excel",
     },
   ],
@@ -380,8 +381,9 @@ export const timesheetSection: SectionDefinition = {
   crossModuleNotes: [
     "Sources: Excel PY-05/PY-06 and Report §4.3 Timesheet Recording / Finalization.",
     "Schema matches ER timesheets + timesheet_days only.",
+    "Report BPMN-2: HQ self / support officer / Second Unit designated person → Dept Head lock → Payroll.",
+    "Wages-based: named day rows excluded; collective cash on Salaries PY-10 (forms + ER).",
     "Open: weekly/public holiday day_status — Crest Point notes say confirm before build.",
-    "Wages-based presence may be recorded on days; pay is still Salaries PY-10 collective cash.",
   ],
   deliverableChecklist: [
     { item: "PY-05 period + employee day rows aligned to ER", done: true },

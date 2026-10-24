@@ -1,0 +1,608 @@
+{
+  "Finance_Accounting": [
+    {
+      "code": "FA-01",
+      "sheet": "FA-01 Payment Voucher (PV)",
+      "purpose": "Printable PV with Prepared by / Reviewed by / Verified by (Internal Control) footer",
+      "source": "4.1.2 Voucher Management; 4.1.4"
+    },
+    {
+      "code": "FA-02",
+      "sheet": "FA-02 Receipt Voucher (RV)",
+      "purpose": "Printable RV with the same three-block footer",
+      "source": "4.1.2; 4.1.4"
+    },
+    {
+      "code": "FA-03",
+      "sheet": "FA-03 Journal Voucher (JV)",
+      "purpose": "Printable JV (non-cash adjustments, depreciation, corrections, transfers) with balance check",
+      "source": "4.1.2; 4.1.4"
+    },
+    {
+      "code": "FA-04",
+      "sheet": "FA-04 Voucher Data Fields",
+      "purpose": "Field dictionary: type, source, mandatory, validation for all vouchers",
+      "source": "4.1.4 Required Data Fields - Vouchers"
+    },
+    {
+      "code": "FA-05",
+      "sheet": "FA-05 Bank Stmt Import",
+      "purpose": "Standardized Excel/CSV column template for bank statements",
+      "source": "4.1.2 Bank Account Integration, Method 1"
+    },
+    {
+      "code": "FA-06",
+      "sheet": "FA-06 Bank Reconciliation",
+      "purpose": "Reconciliation screen: matching, auto-posting entries, live unreconciled counter, closing block",
+      "source": "4.1.2 Reconciliation & Posting; 4.1.4"
+    },
+    {
+      "code": "FA-07",
+      "sheet": "FA-07 Bulk Import",
+      "purpose": "Bulk transaction import template with row-level validation",
+      "source": "4.1.2 Bulk Transaction Import"
+    },
+    {
+      "code": "FA-08",
+      "sheet": "FA-08 Revenue Recognition",
+      "purpose": "Auto-generated revenue entry from the weighing-system dispatch record",
+      "source": "4.1.2; 4.1.4 Revenue Recognition Entry"
+    },
+    {
+      "code": "FA-09",
+      "sheet": "FA-09 Purchase Budget Check",
+      "purpose": "Budget check notification and ED-override reference record",
+      "source": "4.1.2 Purchase Cycle Budget Control"
+    },
+    {
+      "code": "FA-10",
+      "sheet": "FA-10 IC Verification",
+      "purpose": "Internal Control verification record for final payments (Verify / Reject)",
+      "source": "4.1.2 Purchase Cycle & Payables; 3.1"
+    },
+    {
+      "code": "FA-11",
+      "sheet": "FA-11 Correction Request",
+      "purpose": "Standard Officer correction request and Department Head decision (all modules)",
+      "source": "3.1 Correction Protocol; 4.1.2"
+    },
+    {
+      "code": "FA-12",
+      "sheet": "FA-12 Fiscal Periods",
+      "purpose": "Fiscal year and period configuration with Open / Close / Re-open status",
+      "source": "4.1.2 Fiscal Year and Financial Period"
+    },
+    {
+      "code": "FA-13",
+      "sheet": "FA-13 Period-End Closing",
+      "purpose": "Closing checklist and re-open protocol log",
+      "source": "4.1.5 Workflow 5"
+    },
+    {
+      "code": "FA-14",
+      "sheet": "FA-14 Chart of Accounts",
+      "purpose": "Account creation template with mandatory Direct/Indirect classification",
+      "source": "4.1.2 Chart of Accounts"
+    },
+    {
+      "code": "FA-15",
+      "sheet": "FA-15 Accounting Entries",
+      "purpose": "Developer reference of automatic background entries",
+      "source": "4.1.4 Accounting Entries - Developer Reference"
+    },
+    {
+      "code": "FA-16",
+      "sheet": "FA-16 Report Standard",
+      "purpose": "Standard header/footer for every report, shown with a Trial Balance example",
+      "source": "4.1.4 Required Reports"
+    },
+    {
+      "code": "FA-17",
+      "sheet": "FA-17 Reports Spec",
+      "purpose": "List of required Finance reports with frequency and filters",
+      "source": "4.1.4 Required Reports"
+    },
+    {
+      "code": "FA-18",
+      "sheet": "FA-18 Control Log",
+      "purpose": "Standard audit-trail layout (User ID, timestamp, action)",
+      "source": "3.1 Control Log"
+    }
+  ],
+  "Inventory": [
+    {
+      "code": "IN-01",
+      "sheet": "IN-01 Item Request",
+      "purpose": "Item Request Form with Dept Head / Director-confirmation chain and Inventory Officer stock check",
+      "source": "4.2.2 Item Request and Issuance Workflow"
+    },
+    {
+      "code": "IN-02",
+      "sheet": "IN-02 Store Issuance",
+      "purpose": "Store Issuance Form with automatic consumable / non-consumable treatment",
+      "source": "4.2.2 Scenario 1"
+    },
+    {
+      "code": "IN-03",
+      "sheet": "IN-03 Asset Handover",
+      "purpose": "Asset - In Use record: employee name, position, department, date",
+      "source": "4.2.2 Non-Consumable Items"
+    },
+    {
+      "code": "IN-04",
+      "sheet": "IN-04 Purchase Request",
+      "purpose": "Purchase Request Form (replaces manual FS-9) and transfer to Procurement",
+      "source": "4.2.2 Scenario 2"
+    },
+    {
+      "code": "IN-05",
+      "sheet": "IN-05 Goods Receipt Note",
+      "purpose": "GRN with automatic discrepancy flag and posting by item category",
+      "source": "4.2.2 Goods Receipt from Procurement"
+    },
+    {
+      "code": "IN-06",
+      "sheet": "IN-06 IC GRN Verification",
+      "purpose": "Mandatory Internal Control verify / reject record at GRN stage",
+      "source": "4.2.2 Internal Control Verification"
+    },
+    {
+      "code": "IN-07",
+      "sheet": "IN-07 Fixed Asset Entry",
+      "purpose": "Fixed asset registration with mandatory fields and Land rate lock",
+      "source": "4.2.2 Fixed Assets Received through Procurement"
+    },
+    {
+      "code": "IN-08",
+      "sheet": "IN-08 Depreciation Rate Change",
+      "purpose": "Formal rate adjustment record (original, new, reason, effective date)",
+      "source": "4.2.2 Depreciation Control"
+    },
+    {
+      "code": "IN-09",
+      "sheet": "IN-09 Loss & Write-Down",
+      "purpose": "Loss, wastage and write-down to net realizable value with Head approval",
+      "source": "4.2.2 Residual Value and Inventory Write-Down"
+    },
+    {
+      "code": "IN-10",
+      "sheet": "IN-10 Item Master",
+      "purpose": "Supporting item master (type, unit, minimum threshold, default expense account)",
+      "source": "Derived from 4.2.2 (item types, thresholds)"
+    },
+    {
+      "code": "IN-11",
+      "sheet": "IN-11 Stock Level & Alerts",
+      "purpose": "Live stock report layout with low-stock alert logic",
+      "source": "4.2.2 Real-Time Inventory Visibility"
+    },
+    {
+      "code": "IN-12",
+      "sheet": "IN-12 Approval Matrix",
+      "purpose": "Who prepares, approves and verifies each form",
+      "source": "4.2.3 System Roles and Access Permissions"
+    },
+    {
+      "code": "IN-13",
+      "sheet": "IN-13 Accounting Entries",
+      "purpose": "Automatic background double-entries for the module",
+      "source": "4.2.4 Accounting Entries - Developer Reference"
+    },
+    {
+      "code": "IN-14",
+      "sheet": "IN-14 Reports Spec",
+      "purpose": "Required inventory reports, frequency and filters",
+      "source": "4.2.4 Required Reports"
+    },
+    {
+      "code": "IN-15",
+      "sheet": "IN-15 Correction Request",
+      "purpose": "Standard officer correction request and Department Head decision",
+      "source": "4.2.2 Officer Correction Request Workflow"
+    }
+  ],
+  "Planning_Policy": [
+    {
+      "code": "PL-01",
+      "sheet": "PL-01 Plan Item Creation",
+      "purpose": "Dynamic plan item: class, category, CoA link or N/A",
+      "source": "4.7.2 Dynamic Plan Item Creation"
+    },
+    {
+      "code": "PL-02",
+      "sheet": "PL-02 Plan Approval Record",
+      "purpose": "Plan submission, completeness review and Head approval",
+      "source": "4.7.5 Workflow 1"
+    },
+    {
+      "code": "PL-03",
+      "sheet": "PL-03 Operational Plan",
+      "purpose": "Monthly excavation and extraction targets per Second Unit",
+      "source": "4.7.2 Operational Plan"
+    },
+    {
+      "code": "PL-04",
+      "sheet": "PL-04 Financial Plan",
+      "purpose": "Monthly revenue, cost and CAPEX plan with auto planned P&L",
+      "source": "4.7.2 Comprehensive Financial, P&L and CAPEX Plan"
+    },
+    {
+      "code": "PL-05",
+      "sheet": "PL-05 Actual Volume Entry",
+      "purpose": "Manual actual volumes with mandatory reference document",
+      "source": "4.7.2 Non-Financial Metric Exemption; 4.7.4"
+    },
+    {
+      "code": "PL-06",
+      "sheet": "PL-06 Variance Analysis",
+      "purpose": "Plan vs actual variance (absolute and %) with alert status",
+      "source": "4.7.2 Variance Analysis"
+    },
+    {
+      "code": "PL-07",
+      "sheet": "PL-07 Alert Parameters & Log",
+      "purpose": "Variance thresholds and the alert log",
+      "source": "4.7.2 Automated Variance Alerts"
+    },
+    {
+      "code": "PL-08",
+      "sheet": "PL-08 Actual vs Planned P&L",
+      "purpose": "Real-time Actual vs Planned P&L report layout",
+      "source": "4.7.2 Automated Planned vs Actual P&L"
+    },
+    {
+      "code": "PL-09",
+      "sheet": "PL-09 Plan Amendment Request",
+      "purpose": "Amendment with mandatory ED approval reference",
+      "source": "4.7.2 Plan Amendment Protocol; Workflow 3"
+    },
+    {
+      "code": "PL-10",
+      "sheet": "PL-10 Correspondence Register",
+      "purpose": "Digital in/out correspondence register (addition)",
+      "source": "4.7.1 As-Is activity / pain point"
+    },
+    {
+      "code": "PL-11",
+      "sheet": "PL-11 Correction Request",
+      "purpose": "Standard officer correction request (Planning)",
+      "source": "4.7.2 Officer Correction Request Workflow"
+    },
+    {
+      "code": "PL-12",
+      "sheet": "PL-12 Approval Matrix",
+      "purpose": "Who prepares and approves each form",
+      "source": "4.7.3 System Roles and Access Permissions"
+    },
+    {
+      "code": "PL-13",
+      "sheet": "PL-13 Data Sources & Logic",
+      "purpose": "Where actuals come from, variance logic and As-Is gaps",
+      "source": "4.7.4 Developer Specifications"
+    },
+    {
+      "code": "PL-14",
+      "sheet": "PL-14 Reports Spec",
+      "purpose": "Required planning reports and filters",
+      "source": "4.7.4 Required Reports"
+    }
+  ],
+  "Procurement": [
+    {
+      "code": "PC-01",
+      "sheet": "PC-01 Pending Request Queue",
+      "purpose": "Queue of approved purchase requests with the ED approval gate",
+      "source": "4.6.2 Purchase Request Receipt"
+    },
+    {
+      "code": "PC-02",
+      "sheet": "PC-02 Method & Classification",
+      "purpose": "Procurement method and classification record",
+      "source": "4.6.2 Procurement Method Selection"
+    },
+    {
+      "code": "PC-03",
+      "sheet": "PC-03 Bid Comparison",
+      "purpose": "Competing bids and mandatory selection justification",
+      "source": "4.6.2 Bid Tracking and Supplier Selection Justification"
+    },
+    {
+      "code": "PC-04",
+      "sheet": "PC-04 PO & Contract",
+      "purpose": "Purchase order / contract record with deadline, alerts and deposit flag",
+      "source": "4.6.2 Purchase Order & Contract Recording"
+    },
+    {
+      "code": "PC-05",
+      "sheet": "PC-05 Security Deposit Action",
+      "purpose": "Deposit receipt, refund authorization and forfeiture",
+      "source": "4.6.2 Supplier Security Deposit Management"
+    },
+    {
+      "code": "PC-06",
+      "sheet": "PC-06 Security Deposit Ledger",
+      "purpose": "Active, refunded and forfeited deposits",
+      "source": "4.6.2; 4.6.4 Reports"
+    },
+    {
+      "code": "PC-07",
+      "sheet": "PC-07 Implementation Tracker",
+      "purpose": "Implementation % tracker with deadline alerts and Overdue / Breached flag",
+      "source": "4.6.2 Project Implementation Tracking"
+    },
+    {
+      "code": "PC-08",
+      "sheet": "PC-08 Extension Request",
+      "purpose": "Formal contract extension with mandatory justification",
+      "source": "4.6.2 Contract Extension Workflow"
+    },
+    {
+      "code": "PC-09",
+      "sheet": "PC-09 Project Handover",
+      "purpose": "Completion / handover record for non-goods contracts",
+      "source": "4.6.2 Goods Delivery, Project Handover"
+    },
+    {
+      "code": "PC-10",
+      "sheet": "PC-10 IC Verification",
+      "purpose": "Mandatory IC verify / reject at GRN or Handover",
+      "source": "4.6.2 IC Verification Gate; Workflow 4"
+    },
+    {
+      "code": "PC-11",
+      "sheet": "PC-11 Contract Register",
+      "purpose": "Register layout with summaries by method and status",
+      "source": "4.6.4 Required Reports"
+    },
+    {
+      "code": "PC-12",
+      "sheet": "PC-12 Supplier Master",
+      "purpose": "Supplier master with blacklist flag (addition)",
+      "source": "4.6.1 pain point - not in To-Be"
+    },
+    {
+      "code": "PC-13",
+      "sheet": "PC-13 Classifications",
+      "purpose": "Procurement classification settings",
+      "source": "4.6.2 Procurement Classification"
+    },
+    {
+      "code": "PC-14",
+      "sheet": "PC-14 Thresholds Config",
+      "purpose": "Procurement thresholds and authority limits with test calculator",
+      "source": "4.6.1 As-Is thresholds; 4.6.2"
+    },
+    {
+      "code": "PC-15",
+      "sheet": "PC-15 Correction Request",
+      "purpose": "Standard officer correction request (Procurement)",
+      "source": "4.6.2 Officer Correction Request Workflow"
+    },
+    {
+      "code": "PC-16",
+      "sheet": "PC-16 Approval Matrix",
+      "purpose": "Who prepares, approves and verifies each form",
+      "source": "4.6.3 System Roles and Access Permissions"
+    },
+    {
+      "code": "PC-17",
+      "sheet": "PC-17 Accounting Entries",
+      "purpose": "Deposit, goods received and payment entries",
+      "source": "4.6.4 Accounting Entries"
+    },
+    {
+      "code": "PC-18",
+      "sheet": "PC-18 Reports Spec",
+      "purpose": "Required procurement reports and filters",
+      "source": "4.6.4 Required Reports"
+    }
+  ],
+  "Properties": [
+    {
+      "code": "PP-01",
+      "sheet": "PP-01 Land Registration",
+      "purpose": "Land asset registration (depreciation locked at zero)",
+      "source": "4.5.2 Property Asset Registration"
+    },
+    {
+      "code": "PP-02",
+      "sheet": "PP-02 Building Registration",
+      "purpose": "Building registration with Inventory-assigned depreciation rate",
+      "source": "4.5.2 Property Asset Registration"
+    },
+    {
+      "code": "PP-03",
+      "sheet": "PP-03 In-Use Property Record",
+      "purpose": "Occupancy, purpose, condition and maintenance history",
+      "source": "4.5.2 In-Use Property Management"
+    },
+    {
+      "code": "PP-04",
+      "sheet": "PP-04 Tenancy Record",
+      "purpose": "Tenancy agreement record with auto contract value and BRT rate",
+      "source": "4.5.2 Rental Property Management and Credit Control"
+    },
+    {
+      "code": "PP-05",
+      "sheet": "PP-05 Rent Due Auto-Posting",
+      "purpose": "Automatic rent and BRT occurrence postings per due date",
+      "source": "4.5.2 BRT on Rental Income; Workflow 2"
+    },
+    {
+      "code": "PP-06",
+      "sheet": "PP-06 Tenant Payment Receipt",
+      "purpose": "Finance log of tenant deposit slips (posts after IC)",
+      "source": "4.5.2 Tenant Payment Receipt"
+    },
+    {
+      "code": "PP-07",
+      "sheet": "PP-07 IC Receipt Verification",
+      "purpose": "Mandatory IC verify / reject of the tenant receipt",
+      "source": "4.5.2 Tenant Payment Receipt; Workflow 3"
+    },
+    {
+      "code": "PP-08",
+      "sheet": "PP-08 Tenant Ledger",
+      "purpose": "Live credit-control ledger with all approved ledger fields",
+      "source": "4.5.2 Tenant Ledger and Payment Tracking"
+    },
+    {
+      "code": "PP-09",
+      "sheet": "PP-09 Alerts & Follow-Up",
+      "purpose": "Alert rules and permanent follow-up log",
+      "source": "4.5.2 Automated Rent Due Notifications"
+    },
+    {
+      "code": "PP-10",
+      "sheet": "PP-10 BRT Payable Ledger",
+      "purpose": "Running BRT liability, accruals and remittances",
+      "source": "4.5.2 BRT; 4.5.4 Reports"
+    },
+    {
+      "code": "PP-11",
+      "sheet": "PP-11 Property Disposal",
+      "purpose": "Disposal / write-off record (supporting)",
+      "source": "4.5.4 Accounting Entries; 4.5.3 roles"
+    },
+    {
+      "code": "PP-12",
+      "sheet": "PP-12 Revaluation & Impairment",
+      "purpose": "Revaluation / impairment with Finance Head and IC approval (supporting)",
+      "source": "4.5.2 IAS 16 compliance statement"
+    },
+    {
+      "code": "PP-13",
+      "sheet": "PP-13 Property Class Request",
+      "purpose": "New property class needing Finance Head approval",
+      "source": "4.5.2 Property Asset Classification"
+    },
+    {
+      "code": "PP-14",
+      "sheet": "PP-14 Property Asset Register",
+      "purpose": "Full register report layout with class summary",
+      "source": "4.5.4 Required Reports"
+    },
+    {
+      "code": "PP-15",
+      "sheet": "PP-15 Correction Request",
+      "purpose": "Standard officer correction request (Properties)",
+      "source": "4.5.2 Officer Correction Request Workflow"
+    },
+    {
+      "code": "PP-16",
+      "sheet": "PP-16 Approval Matrix",
+      "purpose": "Who prepares, approves and verifies each form",
+      "source": "4.5.3 System Roles and Access Permissions"
+    },
+    {
+      "code": "PP-17",
+      "sheet": "PP-17 Accounting Entries",
+      "purpose": "Automatic property, rental, BRT and disposal entries",
+      "source": "4.5.4 Accounting Entries"
+    },
+    {
+      "code": "PP-18",
+      "sheet": "PP-18 Reports Spec",
+      "purpose": "Required property reports, frequency and filters",
+      "source": "4.5.4 Required Reports"
+    }
+  ],
+  "Sales_Marketing": [
+    {
+      "code": "SM-01",
+      "sheet": "SM-01 Sales Order Entry",
+      "purpose": "ED-approved sales order record with approval gate and Head confirmation",
+      "source": "4.4.2 Sales Order Process and ED Approval"
+    },
+    {
+      "code": "SM-02",
+      "sheet": "SM-02 Tariff Slip",
+      "purpose": "Printable payment instruction with auto-calculated amount",
+      "source": "4.4.2 Tariff Issuance"
+    },
+    {
+      "code": "SM-03",
+      "sheet": "SM-03 Payment Confirmation",
+      "purpose": "Finance deposit-to-tariff match and Customer Advance posting",
+      "source": "4.4.2 Customer Payment and Finance Confirmation"
+    },
+    {
+      "code": "SM-04",
+      "sheet": "SM-04 IC Payment Verification",
+      "purpose": "Mandatory three-way check (bank slip, tariff slip, ED-approved order)",
+      "source": "4.4.2 Internal Control Payment Verification"
+    },
+    {
+      "code": "SM-05",
+      "sheet": "SM-05 Coal Allocation Auth",
+      "purpose": "Authorization record with live tracking fields",
+      "source": "4.4.2 Coal Allocation Authorization"
+    },
+    {
+      "code": "SM-06",
+      "sheet": "SM-06 Dispatch Tracking",
+      "purpose": "Dispatch events, cumulative and remaining entitlement, status rules",
+      "source": "4.4.2 Dispatch Tracking"
+    },
+    {
+      "code": "SM-07",
+      "sheet": "SM-07 Weighing Interface",
+      "purpose": "Weighing-system record received by the ERP and the three automatic actions",
+      "source": "4.4.2 Weighing System Integration"
+    },
+    {
+      "code": "SM-08",
+      "sheet": "SM-08 Sub-Office Minor Sale",
+      "purpose": "Minor sales at Sub-Offices through RV / JV",
+      "source": "4.4.2 Sub-Office Coal Dispatch Process"
+    },
+    {
+      "code": "SM-09",
+      "sheet": "SM-09 Customer Tracking View",
+      "purpose": "Ordered vs paid vs authorized vs dispatched per customer",
+      "source": "4.4.2 Order and Dispatch Tracking; 4.4.1 pain point"
+    },
+    {
+      "code": "SM-10",
+      "sheet": "SM-10 Customer Master",
+      "purpose": "Supporting customer database layout",
+      "source": "Derived (customers selected from database)"
+    },
+    {
+      "code": "SM-11",
+      "sheet": "SM-11 Tariff Schedule",
+      "purpose": "Supporting unit-price master",
+      "source": "Derived (unit price from approved tariff schedule)"
+    },
+    {
+      "code": "SM-12",
+      "sheet": "SM-12 Status Lifecycle",
+      "purpose": "Sequence of statuses and gates from order to fulfilment",
+      "source": "4.4.2; 4.4.5 Workflows 1-4"
+    },
+    {
+      "code": "SM-13",
+      "sheet": "SM-13 Correction Request",
+      "purpose": "Standard officer correction request (Sales)",
+      "source": "4.4.2 Officer Correction Request Workflow"
+    },
+    {
+      "code": "SM-14",
+      "sheet": "SM-14 Approval Matrix",
+      "purpose": "Who prepares, approves and verifies each form",
+      "source": "4.4.3 System Roles and Access Permissions"
+    },
+    {
+      "code": "SM-15",
+      "sheet": "SM-15 Accounting Entries",
+      "purpose": "Automatic entries for deposits, dispatch and cost of coal sold",
+      "source": "4.4.4 Accounting Entries"
+    },
+    {
+      "code": "SM-16",
+      "sheet": "SM-16 Reports Spec",
+      "purpose": "Required sales reports, frequency and filters",
+      "source": "4.4.4 Required Reports"
+    }
+  ]
+}

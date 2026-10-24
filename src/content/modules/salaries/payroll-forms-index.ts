@@ -10,20 +10,20 @@ export const payrollFormsIndexSection: SectionDefinition = {
   nameDari: "فهرست فورم‌های معاشات",
   enableReview: true,
   description:
-    "Master map of North_Coal_ERP_Payroll_Forms.xlsx — all 20 sheets (Index + PY-01…PY-20). Each form links to the ENCC requirement entity/section. Employee header is lean (first/last/father); bank is its own table; documents/education stay in HR storage.",
+    "Master map of Crest Point workbook North_Coal_ERP_Payroll_Forms.xlsx (PY-01…PY-20) aligned to Report - North Coal §4.3 for ENCC. Each form maps to a lean entity matching Tables & ER. PY-01…06 → HR (BPMN-1/2); PY-07…20 → Salaries (BPMN-3/4/5).",
   status: "draft",
-  currentTool: "forms/North_Coal_ERP_Payroll_Forms.xlsx (Crest Point v1.0)",
+  currentTool: "forms/North_Coal_ERP_Payroll_Forms.xlsx + Report - North Coal (1).pdf §4.3",
   summary: [
-    "Source file: forms/North_Coal_ERP_Payroll_Forms.xlsx — 21 sheets including Index",
-    "Group A Master data: PY-01 Employee + Bank table + History | PY-02 Pro-rata",
-    "Group B Time & leave: PY-03 Leave | PY-04 Leave balance | PY-05 Timesheet | PY-06 Finalize",
-    "Group C Pay run: PY-07 Advance | PY-08 Ledger | PY-09 Payroll | PY-10 Wages | PY-11 Summary | PY-12 IC",
-    "Group D Outputs: PY-13 Payslip | PY-14 Bank list | PY-15 Tax slabs | PY-16 Tax register",
-    "Group E Control: PY-17 Correction | PY-18 Approval matrix | PY-19 Accounting | PY-20 Reports",
+    "Sources: Report §4.3 To-Be + Crest Point forms — client ENCC",
+    "A Master: PY-01 Employee/Bank/History | PY-02 Pro-rata → HR + ENT-SAL-012",
+    "B Time & leave: PY-03/04 Leave | PY-05/06 Timesheet → HR (BPMN-1/2)",
+    "C Pay run: PY-07/08 Advance | PY-09/11 Payroll | PY-10 Wages | PY-12 IC → Salaries (BPMN-3/4)",
+    "D Outputs: PY-13 Payslip | PY-14 Bank | PY-15/16 Tax → Salaries",
+    "E Control: PY-17 Correction | PY-18 Matrix | PY-19 GL | PY-20 Reports → Salaries (BPMN-5)",
   ],
   precededBy: [],
   followedBy: [{ moduleId: "salaries", sectionId: "salaries", label: "Salaries detail" }],
-  relatedSections: ["hr", "leave-requests", "timesheet", "salaries"],
+  relatedSections: ["hr", "leave-requests", "timesheet", "salaries", "payroll-data-model"],
   entities: [
     {
       id: "ENT-SAL-FORM-MAP",
@@ -258,12 +258,14 @@ export const payrollFormsIndexSection: SectionDefinition = {
     },
   ],
   crossModuleNotes: [
-    "Excel Index sheet purposes are the source of truth for form intent.",
-    "ENCC extras (Person Documents, Education, بست, Employment History) are outside PY-01–20 but kept in HR. Attendance = timesheet days.",
+    "Report - North Coal §4.3 is the process authority; Excel PY sheets are the form screens.",
+    "PY-01…06 under HR; PY-07…20 under Salaries — same ER tables.",
+    "ENCC extras (documents, education, بست) stay in HR; attendance = timesheet_days.",
   ],
   deliverableChecklist: [
     { item: "All 20 PY forms listed with entity mapping", done: true },
-    { item: "Grouped A–E for navigation", done: true },
+    { item: "Grouped A–E; BPMN-1…5 cross-refs", done: true },
+    { item: "Aligned to Report §4.3.2–4.3.5 + §4.3.4 reports", done: true },
     { item: "UI shows Form PY-xx codes like workbook", done: false },
   ],
 };

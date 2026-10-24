@@ -15,11 +15,11 @@ export const hrModule = createDepartmentModule({
   overview:
     "HR owns Crest Point PY-01…PY-06 from North_Coal_ERP_Payroll_Forms.xlsx and Report — North Coal §4.3 (Employee Database, Leave, Timesheet). Detail sections below; open Tables & ER diagram for the builder schema (same fields). Payroll calculation PY-07–20 is under معاشات.",
   purposes: [
-    "PY-01 employee master + bank accounts + date-effective employment history (PY-02 pro-rata in Salaries)",
-    "ENCC storage: person documents + education (lean ER columns); بست in General Tables",
-    "PY-03/04 leave for Permanent staff — balances via leave_entitlements",
-    "PY-05/06 timesheet period + employee day rows (attendance aggregates from days)",
-    "Shared HR & Payroll Data Model (ER) for builders",
+    "PY-01 employee master + mandatory bank (Report §4.3) + employment history for PY-02",
+    "ENCC storage: person documents + education; بست in General Tables",
+    "PY-03/04 leave (BPMN-1) — Permanent only; Director ref on every leave; 20/10/20 + exceptional",
+    "PY-05/06 timesheet (BPMN-2) — named staff day rows; Dept Head lock → Payroll",
+    "Shared Tables & ER diagram for builders",
   ],
   sections: [
     hrSection,
@@ -37,7 +37,7 @@ export const hrModule = createDepartmentModule({
     {
       code: "GEN",
       name: "General Tables",
-      relation: "positions (بست), branches, leave_entitlements",
+      relation: "branches, departments, positions (بست), leave_entitlements",
     },
   ],
   openQuestions: [

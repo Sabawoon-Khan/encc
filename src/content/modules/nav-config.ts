@@ -13,6 +13,7 @@ export const DEPARTMENT_NAV = [
   { moduleId: "procurement", label: "تدارکات" },
   { moduleId: "hr", label: "منابع بشری" },
   { moduleId: "salaries", label: "معاشات" },
+  { moduleId: "planning", label: "پلان و پالیسی" },
   { moduleId: "balance", label: "بیلانس" },
   { moduleId: "properties", label: "جایداد ها" },
   { moduleId: "site", label: "سایت / معدن" },
